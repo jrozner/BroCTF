@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Score Keeper</title>
+    <style>
+      #login_container {
+        display: none;
+      }
+    </style>
+    <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/socket.io/socket.io.js"></script>
+    <script>
+    $('document').ready(function() {
+      socket = io.connect('http://localhost:8080');
+      initDom();
+
+      socket.on('connect', function() {
+        console.log('connected');
+      });
+
+      socket.on('disconnect', function() {
+        console.log('disconnected');
+      });
+
+      socket.on('login_success', function() {
+        console.log('login sucessful');
+      });
+
+      socket.on('login_failure', function() {
+        console.log('login failed');
+      });
+    });
+
+    function login(username, password) {
+      socket.emit('login', {'username': username, 'password': password});
+    }
+
+    function initDom() {
+      $('#login_button').click(function() {
+        login($('#username').val(), $('#password').val());
+      });
+
+      $('#login_container').show();
+    }
+    </script>
+  </head>
+  <body>
+    <div id="login_container">
+      <p class="field">
+        <input type="text" id="username" name="username" placeholder="Username" />
+      </p>
+      <p class="field">
+        <input type="password" id="password" name="password" placeholder="password" />
+      </p>
+      <p>
+        <input type="button" id="login_button" name="login" value="login" />
+      </p>
+    </div>
+  </body>
+</html>
