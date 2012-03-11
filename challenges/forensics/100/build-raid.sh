@@ -7,6 +7,7 @@ RAIDDEV="/dev/md100"
 RAIDMNT="/mnt/tmp"
 RHFSMNT="$RAIDMNT/mnt"
 RHFS="$RAIDMNT/dev/loop0"
+ARTIFACT="forensics100.tar.lzma"
 
 if [ "0" != `id -u` ]; then
 	echo "$0 must be run as root."
@@ -23,8 +24,9 @@ if [ "0" != "$?" ]; then
 fi
 
 # Create the initial devices
-if [ -e "/dev/loop0" ]; then
-	echo "/dev/loop0 (and possibly 1 and 2) already exists.  Please adjust"
+losetup -a | egrep "loop[0|1|2]"
+if [ "0" = "$?" ]; then
+	echo "/dev/loop0 (and possibly 1 and 2) are in use.  Please adjust"
 	echo "the sequence numbers under the initial device creation accordingly,"
 	echo "or otherwise detach those loopbacks."
 	exit 3
@@ -57,7 +59,9 @@ if [ ! -x `which mkfs.btrfs` ]; then
 	echo "Install btrfs-progs package."
 	exit 5
 fi
-mkfs.btrfs -L brometheus $RAIDDEV
+# note. BTRFS is kinda broken on sw RAID. :\  Maybe I missed a flag somewhere?
+#mkfs.btrfs -L brometheus $RAIDDEV
+mke2fs -t ext4 -L brometheus -m0 $RAIDDEV
 
 # Mount and prepare for pwnage
 if [ ! -d "$RAIDMNT" ]; then
@@ -107,6 +111,15 @@ rm -f stripe2
 # Compression should be the last step...
 if [ ! -x `which lzma` ]; then
 	echo "Might want to install the LZMA package."
+	exit 7
 fi
-echo "Now, compress!!!"
+
+tar -cf $ARTIFACT --lzma lol dongs
+
+HASH=$(sha1sum $ARTIFACT | awk '{print $1}')
+mv $ARTIFACT "$(basename $ARTIFACT .tar.lzma)_${HASH}.tar.lzma"
+
+rm -f lol dongs
+
+# DONE!
 exit 0
