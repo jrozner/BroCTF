@@ -1,0 +1,23 @@
+Next year:
+Hats, or sunglasses.
+Uv flashlight for picking up underage pedobait lol
+*we need a fucking banner*
+Use dip headers. Glue them down as well as tack solder. And tape over or otherwise disable the green arduino light
+hot glue is cheaper than acryllic glue
+You *will* need triangular files for doing hole cutting and corner work
+When using the 1/4" square plastic for bracing, be sure to clamp it at both ends so its flat and level. Dont rely on a single clamp.
+Use headers on the led board and arduino
+Also, use the max serial ic next time so we dont need so many io pins
+We'll have 20 and 30a twistlocks for power, so bring the 120v pdu's!
+Also, bring f'in powerstrips
+No more ipv6 jump boxes with custom radvds and other untested shit
+Set mac limits high. 100 per port seems to work
+Ethernet fried ports, +5vdc down the line. Loldisclamer
+Videos: Tokyo breakfast, sexy sax
+Mystery box: triple polarizer.
+Light hacking: a HUGE led matrix with tricolor leds, that displays a binary digit. A small irda reciever will let you replay the code. Successful replay will yield a new code. Keep entering it in and eventually all lights will solidly light. All the numbers will be an ip. Lights start blue, change to green when the ip is metered out. Green will be port. When someone finall cracks it, it will turn red.
+Try sending key in nonstandard custom http header.
+*bring extra pice nic's!!
+Pit the top teams against eachother by allowing them to attack eachother.
+*admin irc
+Lock down vswitch
