@@ -1,0 +1,9 @@
+How to use the gen binary:
+
+gen -d <dtmfsequence> -t wav <filename.wav>
+
+Things to fix:
+
+ - multimon's call to sox uses an outdated flag, -w.
+
+I don't know what that flag did in past versions of sox, but removing it from the options in the execlp() call causes sox to error out.  
