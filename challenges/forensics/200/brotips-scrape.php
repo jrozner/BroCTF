@@ -29,7 +29,7 @@ function store_tip($content, $url, $ch, $params) {
     $html = explode("\n", $content);
     $tip = '';
     $count = 0;
-    if(preg_match('/brotips.com/([\d]+)',$url, $matches)) {
+    if(preg_match('/brotips.com/([\d]+)$/',$url, $matches)) {
         $tipID = $matches[1];
     } else {
         $tipID = -1;
@@ -67,3 +67,5 @@ $curl_options = array(
     CURLOPT_SSL_VERIFYPEER => FALSE,
     CURLOPT_SSL_VERIFYHOST => FALSE
 );
+
+
