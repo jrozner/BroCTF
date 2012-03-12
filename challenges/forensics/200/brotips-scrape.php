@@ -91,6 +91,8 @@ $pcurl = new ParallelCurl($maxConcurrent,$curl_options);
 $topTip = 1693;
 // $topTip = 5; // Use this for testing.
 
+// Perform scraping.  note that there's no way to randomize the wait
+// between requests that I can find.  Maybe I'll extend that class?
 for( $i=1; $i <= $topTip; ++$i ) {
     $pcurl->startRequest("http://www.brotips.com/${i}", 'store_tip', false);
 }
