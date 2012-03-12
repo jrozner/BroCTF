@@ -14,7 +14,7 @@
 
 // Global data structure to hold the scraped tips
 // that the callback will ask for.
-$bro_tips[] = array();
+$bro_tips = '';
 
 /* Callback function to handle each tip URL
  * $content contains the data from the cURL scrape, that's
@@ -29,7 +29,7 @@ function store_tip($content, $url, $ch, $params) {
     $html = explode("\n", $content);
     $tip = '';
     $count = 0;
-    if(preg_match('/brotips.com/([\d]+)$/',$url, $matches)) {
+    if(preg_match('/brotips.com\/([\d]+)$/',$url, $matches)) {
         $tipID = $matches[1];
     } else {
         $tipID = -1;
@@ -58,6 +58,9 @@ function store_tip($content, $url, $ch, $params) {
             $count = (int)$matches[1];
         }
     }
+
+    // Stuff them into the global associative array for later
+    // assembly into a DB4 table.
     $bro_tips[$tipID] = array('tip'=>$tip,'count'=>$count);
 }
 
@@ -65,7 +68,29 @@ function store_tip($content, $url, $ch, $params) {
 require_once('parallelcurl.php');
 $curl_options = array(
     CURLOPT_SSL_VERIFYPEER => FALSE,
-    CURLOPT_SSL_VERIFYHOST => FALSE
+    CURLOPT_SSL_VERIFYHOST => FALSE,
+    CURLOPT_AUTOREFERER => TRUE,
+    CURLOPT_FOLLOWLOCATION => TRUE,
+    CURLOPT_MAXREDIRS => 3,
+    CURLOPT_NOPROGRESS => TRUE
 );
 
+$maxConcurrent = 10;
+$pcurl = new ParallelCurl($maxConcurrent,$curl_options);
+// $topTip = 1693;
+$topTip = 5;
 
+for( $i=1; $i <= $topTip; ++$i ) {
+    $pcurl->startRequest("http://www.brotips.com/${i}", 'store_tip', false);
+}
+$pcurl->finishAllRequests();
+
+// Test?
+foreach($bro_tips as $tipID => $tipData) {
+    echo("\$tipID: $tipID\n");
+    print_r($tipData);
+}
+
+// Here's where we write the DB4 database.
+
+?>
