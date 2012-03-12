@@ -11,6 +11,17 @@
  * don't need to spend a lot of time parsing extra HTML.
  */
 
+// Make sure we have the necessary stuff..
+if(!function_exists('dba_open')) {
+    echo ("Can't load the PHP DBA methods.\nyum -y install php-dba\n");
+    exit(2);
+}
+
+if(!function_exists('curl_init')) {
+    echo("Can't load PHP curl methods.  Sum ting wong.\n");
+    exit(2);
+}
+
 
 // Global data structure to hold the scraped tips
 // that the callback will ask for.
@@ -37,12 +48,12 @@ function store_tip($content, $url, $ch, $params) {
     foreach($html as $lineNum => $line) {
 
         // Prior to tip 1441, all tips were single line.  Detect them specially.
-        if(preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&]*")[\s]*\/>$/', $line, $matches)) {
+        if(preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&%\']*")[\s]*\/>$/', $line, $matches)) {
             $tip .= $matches[1];
         }
 
         // After tip 1442, the tips are multiline, so a little extra care is needed.
-        elseif(preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&]+)/', $line, $matches)) {
+        elseif(preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&%\']+)/', $line, $matches)) {
             $tip .= $matches[1] . " ";
             $nextLine = $lineNum;
             ++$nextLine;
@@ -77,20 +88,36 @@ $curl_options = array(
 
 $maxConcurrent = 10;
 $pcurl = new ParallelCurl($maxConcurrent,$curl_options);
-// $topTip = 1693;
-$topTip = 5;
+$topTip = 1693;
+// $topTip = 5; // Use this for testing.
 
 for( $i=1; $i <= $topTip; ++$i ) {
     $pcurl->startRequest("http://www.brotips.com/${i}", 'store_tip', false);
 }
 $pcurl->finishAllRequests();
 
-// Test?
+// Here's where we write the DB4 database.
+$dbHandle = dba_open('brotips.db', 'n', 'db4');
+if(!$dbHandle) {
+    echo("something went horribly wrong opening the brotips.db file!\nExiting..\n");
+    exit(1);
+}
+
 foreach($bro_tips as $tipID => $tipData) {
     echo("\$tipID: $tipID\n");
     print_r($tipData);
+    if(!dba_insert($tipID, serialize($tipData), $dbHandle)) {
+        echo("Crap, bailed on inserting id: $tipID\n");
+        echo("Data..\n");
+        print_r($tipData);
+    } else {
+        echo("stored tip ID: $tipID\n");
+    }
 }
 
-// Here's where we write the DB4 database.
+// Clean up and close
+dba_optimize($dbHandle);
+dba_sync($dbHandle);
+dba_close($dbHandle);
 
 ?>
