@@ -37,12 +37,12 @@ function store_tip($content, $url, $ch, $params) {
     foreach($html as $lineNum => $line) {
 
         // Prior to tip 1441, all tips were single line.  Detect them specially.
-        if(preg_match('/<meta property="og:description" content=("[\w\d,.-_! ]*")[\s]*\/>$/', $line, $matches)) {
+        if(preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&]*")[\s]*\/>$/', $line, $matches)) {
             $tip .= $matches[1];
         }
 
         // After tip 1442, the tips are multiline, so a little extra care is needed.
-        elseif(preg_match('/<meta property="og:description" content=("[\w\d,.-_! ]+)/', $line, $matches)) {
+        elseif(preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&]+)/', $line, $matches)) {
             $tip .= $matches[1] . " ";
             $nextLine = $lineNum;
             ++$nextLine;
