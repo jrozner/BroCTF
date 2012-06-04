@@ -58,15 +58,17 @@ function store_tip($content, $url, $ch, $params) {
         } else {
 
             // After tip 1442, the tips are multiline, so a little extra care is needed.
-            preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&%\']+)/', $line, $matches);
-            $tip = $matches[1] . " ";
-            $nextLine = $lineNum;
-            ++$nextLine;
-            while(!preg_match("/\"\s\/>$/",$html[$nextLine])) {
-                $tip .= $html[$nextLine] . " ";
+            if(preg_match('/<meta property="og:description" content="(.+)/', $line, $matches)) {
+                $tip = $matches[1] . " ";
+                $nextLine = $lineNum;
                 ++$nextLine;
+                while(!preg_match("/\"\s\/>$/",$html[$nextLine])) {
+                    $tip .= $html[$nextLine] . " ";
+                    ++$nextLine;
+                }
+                $tip .= rtrim($html[$nextLine],'" />');
+                $tip = preg_replace("(\r|\n)", "", $tip);
             }
-            $tip .= rtrim($html[$nextLine],"\" />");
         }
 
         // Don't forget to grab the fist count too, just in case.
@@ -93,22 +95,17 @@ $curl_options = array(
 
 $maxConcurrent = 10;
 $pcurl = new ParallelCurl($maxConcurrent,$curl_options);
-//$topTip = 1978;
-$topTip = 10; // Use this for testing.
+
+// Set to 10 for testing.
+$topTip = 1978;
 
 // Perform scraping.  note that there's no way to randomize the wait
 // between requests that I can find.  Maybe I'll extend that class?
+// Set $i to something > 1500 for testing.
 for( $i=1; $i <= $topTip; ++$i ) {
     $pcurl->startRequest("http://www.brotips.com/${i}", 'store_tip', false);
 }
 $pcurl->finishAllRequests();
-
-// Here's where we write the DB4 database.
-$dbHandle = dba_open('brotips.db', 'n', 'db4');
-if(!$dbHandle) {
-    echo("something went horribly wrong opening the brotips.db file!\nExiting..\n");
-    exit(1);
-}
 
 // Since DB4 is being pile of poo, lets also try CSV as a backup.
 $writeTipsCSV = True;
@@ -120,23 +117,13 @@ if(! $csvHandle = fopen( 'brotips.csv', 'w' ) ) {
 foreach($bro_tips as $tipID => $tipData) {
     echo("\$tipID: $tipID\n");
     print_r($tipData);
-    if(!dba_insert($tipID, sprintf("%d,%s",$tipData['count'],$tipData['tip']), $dbHandle)) {
-        echo("Crap, bailed on inserting id: $tipID\n");
-        echo("Data..\n");
-        print_r($tipData);
-    } else {
-        echo("stored tip ID: $tipID\n");
-    }
-	if($writeTipsCSV) {
+    if($writeTipsCSV) {
       $csvTip = array($tipID,$tipData['count'],$tipData['tip']);
 		fputcsv($csvHandle, $csvTip, "\t", '"' );
 	}
 }
 
 // Clean up and close
-dba_optimize($dbHandle);
-dba_sync($dbHandle);
-dba_close($dbHandle);
 fclose($csvHandle);
 
 ?>
