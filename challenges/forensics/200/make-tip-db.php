@@ -9,7 +9,7 @@ if(!$dbHandle) {
 }
 
 // load the CSV file for output
-$dbFile = 'brotips-dev.csv';
+$dbFile = 'brotips.csv';
 if(! $csvHandle = fopen( $dbFile, 'r' ) ) {
    echo "Fffuuuu unable to open '$dbFile' file..  ";
 	exit(1);
