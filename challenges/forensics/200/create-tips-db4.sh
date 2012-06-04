@@ -6,10 +6,13 @@
 CSVFILE="brotips.csv"
 DBFILE="brotips.db"
 
-# First up, scrape brotips.com
+# kill any old copies
+rm -f $CSVFILE $DBFILE "$DBFILE.xz"
+
+# scrape brotips.com into a CSV file.
 ./brotips-scrape.php
 
-# Second, check that there's a CSV file with at least 1000 lines
+# Check that there's a CSV file with at least 1000 lines
 if [ ! -f "$CSVFILE" ]; then
 	echo "Can't find the brotips file '$CSVFILE' wtf?"
 	exit 1
