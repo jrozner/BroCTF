@@ -3,7 +3,7 @@
 
 /* This script will insert the key into the scraped db. */
 
-$dbHandle = dba_open('brotips.db', 'n', 'db4');
+$dbHandle = dba_open('brotips.db', 'w', 'db4');
 if(!$dbHandle) {
     echo("something went horribly wrong opening the brotips.db file!\nExiting..\n");
     exit(1);
