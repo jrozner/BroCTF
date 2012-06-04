@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-# Run all the processes to build this DB4 file.
+# Run all the processes to build the BroTips DB4 file.
 #
 
 CSVFILE="brotips.csv"
 DBFILE="brotips.db"
 
 # kill any old copies
-rm -f $CSVFILE $DBFILE "$DBFILE.xz"
+rm -f $CSVFILE $DBFILE "$DBFILE.xz" brotips-scrape*.html
 
 # scrape brotips.com into a CSV file.
 ./brotips-scrape.php
@@ -40,6 +40,7 @@ xz "$DBFILE"
 # Test
 if [ -e "$DBFILE.xz" ]; then
 	echo "All done."
+	rm -f brotips*.html
 else
 	echo "Compression fucked up."
 	exit 4
