@@ -28,7 +28,7 @@ fi
 ./insert-key.php
 
 # Test to see if the key was inserted.
-grep -q "\[key\]" "$DBFILE"
+./read-db.php | grep -q "\[key\]"
 if [ "0" != "$?" ]; then
 	echo "Crap, no key found, wtf?"
 	exit 3
