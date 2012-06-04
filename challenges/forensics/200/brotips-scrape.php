@@ -41,27 +41,32 @@ function store_tip($content, $url, $ch, $params) {
     $tip = '';
     $count = 0;
     if(preg_match('/brotips.com\/([\d]+)$/',$url, $matches)) {
-        $tipID = $matches[1];
+		  $tipID = $matches[1];
     } else {
-        $tipID = -1;
+        // Don't even waste time here if we're not inside of the correct url.
+        return(0);
     }
+    // debug why the fuck it's getting weird parses.
+    file_put_contents("brotips-scrape-tip$tipID.html", $content);
     foreach($html as $lineNum => $line) {
 
         // Prior to tip 1441, all tips were single line.  Detect them specially.
-        if(preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&%\']*")[\s]*\/>$/', $line, $matches)) {
-            $tip .= $matches[1];
-        }
+        if($tipID < 1441) {
+            if(preg_match('/<meta property="og:description" content="(.+)"\s\/>$/', $line, $matches)) {
+                $tip = $matches[1];
+            }
+        } else {
 
-        // After tip 1442, the tips are multiline, so a little extra care is needed.
-        elseif(preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&%\']+)/', $line, $matches)) {
-            $tip .= $matches[1] . " ";
+            // After tip 1442, the tips are multiline, so a little extra care is needed.
+            preg_match('/<meta property="og:description" content=("[\s\w\d,.-_!;&%\']+)/', $line, $matches);
+            $tip = $matches[1] . " ";
             $nextLine = $lineNum;
             ++$nextLine;
-            while(!preg_match("/\/>$/",$html[$nextLine])) {
+            while(!preg_match("/\"\s\/>$/",$html[$nextLine])) {
                 $tip .= $html[$nextLine] . " ";
                 ++$nextLine;
             }
-            $tip .= rtrim($html[$nextLine],"\"/>");
+            $tip .= rtrim($html[$nextLine],"\" />");
         }
 
         // Don't forget to grab the fist count too, just in case.
@@ -88,8 +93,8 @@ $curl_options = array(
 
 $maxConcurrent = 10;
 $pcurl = new ParallelCurl($maxConcurrent,$curl_options);
-$topTip = 1693;
-// $topTip = 5; // Use this for testing.
+//$topTip = 1978;
+$topTip = 10; // Use this for testing.
 
 // Perform scraping.  note that there's no way to randomize the wait
 // between requests that I can find.  Maybe I'll extend that class?
@@ -105,21 +110,33 @@ if(!$dbHandle) {
     exit(1);
 }
 
+// Since DB4 is being pile of poo, lets also try CSV as a backup.
+$writeTipsCSV = True;
+if(! $csvHandle = fopen( 'brotips.csv', 'w' ) ) {
+	echo "Fffuuuu unable to open brotips.csv file..  ";
+	$writeTipsCSV = False;
+}
+
 foreach($bro_tips as $tipID => $tipData) {
     echo("\$tipID: $tipID\n");
     print_r($tipData);
-    if(!dba_insert($tipID, serialize($tipData), $dbHandle)) {
+    if(!dba_insert($tipID, sprintf("%d,%s",$tipData['count'],$tipData['tip']), $dbHandle)) {
         echo("Crap, bailed on inserting id: $tipID\n");
         echo("Data..\n");
         print_r($tipData);
     } else {
         echo("stored tip ID: $tipID\n");
     }
+	if($writeTipsCSV) {
+      $csvTip = array($tipID,$tipData['count'],$tipData['tip']);
+		fputcsv($csvHandle, $csvTip, "\t", '"' );
+	}
 }
 
 // Clean up and close
 dba_optimize($dbHandle);
 dba_sync($dbHandle);
 dba_close($dbHandle);
+fclose($csvHandle);
 
 ?>
