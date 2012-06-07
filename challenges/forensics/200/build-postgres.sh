@@ -3,9 +3,17 @@
 # Make up a super-awesome PostGres DB.
 #
 
+PGADMIN="postgres"
+
+# See if the admin user is even set up
+id -u $PGADMIN 2>&1 > /dev/null
+if [ "$?" != "0" ]; then
+	echo "wtf, no postgres super-user. cannot continue."
+	exit 6
+fi
+
 # make sure we even have hstore support
 rpm -q postgresql-contrib 2>&1 >> /dev/null
-
 if [ "$?" != "0" ]; then
 	echo "HStore not available.  Install postgresql-contrib."
 	exit 1
@@ -13,22 +21,32 @@ fi
 
 # Is the PG database alive? Try and start if not,
 # fail if we can't. :(
-if [ `pgrep postgres | wc -l` < 3 ]; then
+if [ `pgrep postgres | wc -l` -lt 3 ]; then
 	# Start'er up.
-	createdb
-	service postgresql start
+	sudo su -c "createdb"  - $PGADMIN
+	sudo service postgresql start
 fi
-if [ `pgrep postgres | wc -l` < 3 ]; then
+if [ `pgrep postgres | wc -l` -lt 3 ]; then
 	echo "Unable to start postgres, wtf did you do?"
 	exit 3
 fi
 
-DB="brometheus"
-
 # Drop original table
-dropdb $DB
+echo "Dropping $DB"
+DB="brometheus"
+sudo su -c "dropdb $DB" - $PGADMIN
 
-# Recreate original 
+# Set us up the admin user
+echo "Dropping old role."
+sudo su -c "dropuser vector;" - $PGADMIN
+echo "Adding new role."
+sudo su -c "createuser -d -l -s vector" - $PGADMIN
+
+### by this point, your current user should have 
+### PG superuser rights.
+
+# Recreate original
+echo "Creating database"
 createdb $DB
 
 # Apply hstore modules
@@ -36,13 +54,7 @@ psql -d $DB -f /usr/share/pgsql/extension/hstore--1.0.sql
 psql -d $DB -c "CREATE EXTENSION hstore;"
 
 # Make a DB 
-psql -c "CREATE TABLE brotips ( tipID SERIAL PRIMARY KEY NOT NULL, tip hstore );"
-
-# User first
-psql -c "SET autocommit TO 'on'; CREATE USER broctf WITH  ENCRYPTED PASSWORD 'loldongs' NOCREATEDB NOCREATEUSER;" $DB
-
-# Set user perms
-psql -c "GRANT SELECT ON brotips TO broctf" $DB
+psql -d $DB -c "CREATE TABLE brotips ( tipID SERIAL PRIMARY KEY NOT NULL, tip hstore );"
 
 # make the data file nao
 BRODATA="bromages-data.txt"
@@ -62,7 +74,7 @@ KEY=`base64 -w0 brotips.db.xz`
 echo "(${I}, hstore('coolstorybro.jpg', '$KEY'));" >> $BRODATA
 
 # Sanity check
-if [ `wc -l $BRODATA` < 20 ]; then
+if [ `wc -l "$BRODATA"` -lt 20 ]; then
 	echo "Something went wrong making the data file.  bailing out now."
 	exit 4
 fi
