@@ -1,3 +1,14 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <pwd.h>
+#include <sys/socket.h>
+#include <sys/param.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <arpa/inet.h>
 #include "libjack3d.h"
 
 /*
@@ -152,6 +163,13 @@ ssize_t sendString(int socket, char *string) {
   return sent;
 }
 
+/*
+ * recvUntil
+ *
+ *
+ * Make sure that sz is size - 1 of the buffer it writes to to ensure that the
+ * null byte does not write past the end of the buffer.
+ */
 ssize_t recvUntil(int socket, char *buff, size_t sz) {
   ssize_t read = 0, ret = 0;
 
@@ -163,14 +181,14 @@ ssize_t recvUntil(int socket, char *buff, size_t sz) {
       return -1;
     }
 
-    // Client has stopped sending
-    if (ret == 0)
-      break;
-
     read += ret;
+
+    // Client has stopped sending
+    if ((ret == 0) || (buff[read - 1] == '\n'))
+      break;
   }
 
-  buff[read] = '\0';
+  buff[read - 1] = '\0';
 
   return read;
 }

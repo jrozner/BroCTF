@@ -1,4 +1,7 @@
+#include <stdlib.h>
+#include <unistd.h>
 #include "libjack3d.h"
+
 #define USER "joe"
 #define PORT 54321
 
