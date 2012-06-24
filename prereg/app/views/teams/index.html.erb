@@ -1,0 +1,19 @@
+<h1>Registered Teams</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Size</th>
+  </tr>
+
+<% @teams.each do |team| %>
+  <tr>
+    <td><%= team.name %></td>
+    <td><%= team.size %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Team', new_team_path %>
