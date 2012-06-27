@@ -4,12 +4,12 @@ typedef struct __wav_header {
   int format;
   int sub_chunk_1_id;
   int sub_chunk_1_size;
-  int16_t audio_format;
-  int16_t num_channels;
+  short audio_format;
+  short num_channels;
   int sample_rate;
   int byte_rate;
-  int16_t block_align;
-  int16_t bits_per_sample;
+  short block_align;
+  short bits_per_sample;
   int sub_chunk_2_id;
   int sub_chunk_2_size;
 } wav_header;
