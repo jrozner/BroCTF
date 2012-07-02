@@ -4,4 +4,4 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-Prereg::Application.config.secret_token = '0b5301d99c792c2af3a5f034db881f737581e6f9b9f24f46937a610bcc636bd27c930dc89a0855272aebdf3e82efe9c01fe2a4110a7beb3550675fd7e2d6f9ad'
+Prereg::Application.config.secret_token = '991d60b7c9d99c9876016f8421489fafb01ec39866474beac3235192f3685cb526a5085cb77170336746a0270e6e4a2851766d87053dffc96923373192dbbae0'
