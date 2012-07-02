@@ -1,7 +1,7 @@
-drop table if exists flags;
-drop table if exists challenges;
-drop table if exists categories;
-drop table if exists users;
+drop table if exists bonuses cascade;
+drop table if exists user_flags cascade;
+drop table if exists challenges cascade;
+drop table if exists users cascade;
 
 create table users (
   id serial,
@@ -17,29 +17,28 @@ create table challenges (
   id serial,
   title varchar(100) unique,
   description text unique,
-  tier integer,
+  tier integer not null,
   flag varchar(40) unique,
-  unique(value, category_id),
   primary key(id)
 );
 
 create index challenges_flag_idx on challenges(flag);
 
-create table flags (
+create table user_flags (
   id serial,
-  user_id integer references users(id) on delete cascade,
-  challenge_id integer references challenges(id) on delete cascade,
+  user_id integer not null references users(id) on delete cascade,
+  challenge_id integer not null references challenges(id) on delete cascade,
   unique(user_id, challenge_id),
   primary key(id)
 );
 
-create index flags_user_id_idx on flags (user_id);
-create index flags_challenge_id_idx on flags (challenge_id);
+create index user_flags_user_id_idx on user_flags (user_id);
+create index user_flags_challenge_id_idx on user_flags (challenge_id);
 
 create table bonuses (
   id serial,
-  user_id integer references users(id) on delete cascade,
-  value integer,
+  user_id integer not null references users(id) on delete cascade,
+  value integer not null,
   primary key(id)
 );
 
