@@ -7,7 +7,7 @@ int startService(int (*)(int), int);
 void childSigHandler(int);
 ssize_t sendMsg(int, char *, size_t);
 ssize_t sendString(int, char *);
-ssize_t recvUntil(int, char *, size_t);
+ssize_t recvUntil(int, char *, size_t, char);
 int getUIdByName(char *);
 int dropPrivs(char *);
 

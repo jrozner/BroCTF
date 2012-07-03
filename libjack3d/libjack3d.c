@@ -164,13 +164,17 @@ ssize_t sendString(int socket, char *string) {
 }
 
 /*
- * recvUntil
+ * recvUntil recieves from socket until end char or sz bytes
  *
+ * @param socket socket to read from
+ * @param buff buffer to store data in
+ * @param sz number of bytes to read
+ * @param end char to stop reading on
  *
  * Make sure that sz is size - 1 of the buffer it writes to to ensure that the
  * null byte does not write past the end of the buffer.
  */
-ssize_t recvUntil(int socket, char *buff, size_t sz) {
+ssize_t recvUntil(int socket, char *buff, size_t sz, char end) {
   ssize_t read = 0, ret = 0;
 
   while (read < sz) {
@@ -184,7 +188,7 @@ ssize_t recvUntil(int socket, char *buff, size_t sz) {
     read += ret;
 
     // Client has stopped sending
-    if ((ret == 0) || (buff[read - 1] == '\n'))
+    if ((ret == 0) || (buff[read - 1] == end))
       break;
   }
 
@@ -204,7 +208,7 @@ int getUIdByName(char *userName) {
   struct passwd *userInfo;
 
   if ((userInfo = getpwnam(userName)) == NULL) {
-    printf("Unable to find user: %s\n", userName);
+    perror("getpwnam");
     return -1;
   }
 
