@@ -29,7 +29,6 @@ int barcodez(int socket) {
   memset(tehfile, 0x0, sizeof(tehfile));
   memset(cobracmdr, 0x0, sizeof(cobracmdr));
   memset(data, 0x0, sizeof(data));
-  memset(lolwut, 0x0, sizeof(lolwut));
 
   sendString(socket, "Welcome to the QR code reader.\n");
   sendString(socket, "Enter the name of file uploaded to decode data.\n> ");

@@ -9,6 +9,9 @@
 #include <netinet/in.h>
 #include <signal.h>
 #include <arpa/inet.h>
+#ifdef __linux__
+#include <wait.h>
+#endif
 #include "libjack3d.h"
 
 /*
