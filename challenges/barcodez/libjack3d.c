@@ -219,6 +219,24 @@ int getUIdByName(char *userName) {
 }
 
 /*
+ * getGIdByName returns the GID of a user
+ *
+ * @param userName
+ *
+ * Returns the GID of the user on success or -1 on error
+ */
+int getGIdByName(char *userName) {
+  struct passwd *userInfo;
+
+  if ((userInfo = getpwnam(userName)) == NULL) {
+    perror("getpwnam");
+    return -1;
+  }
+
+  return userInfo->pw_gid;
+}
+
+/*
  * dropPrivs sets all privileges to that of the specified user
  *
  * @param userName
@@ -265,4 +283,23 @@ int dropPrivs(char *userName) {
   }
 
   return 0;
+}
+
+int validPath(char *safe, char *path) {
+  char *resolved;
+  int res;
+  size_t sz;
+
+  if ((resolved = realpath(path, NULL)) == NULL) {
+    perror("realpath");
+    return -1;
+  }
+
+  sz = strnlen(safe, sizeof(sz));
+  res = strncmp(safe, resolved, sz);
+
+  if (resolved != NULL)
+    free(resolved);
+
+  return (res == 0) ? 0 : -1;
 }

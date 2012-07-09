@@ -1,0 +1,20 @@
+Barcodez accepts a connection and prompts the user for the filename of the
+image uploaded prior through the php script. It then uses popen to run the
+image through dmtxread and read the outputed data into memory. This can be
+exploited since it reads extra data past the size of the buffer it's going
+into. Originally I had attempted this with QR codes but found they are a
+giant pile of crap and a pain in the ass. I couldn't find an implementation
+that properly supported the 8-bit byte encoding and thus had to use ascii
+shellcode. I didn't have time to write a proper exploit that utilized ROP
+techniques to jump to the shellcode so it was switched to data matrices. For
+extra leet hacker points, switch to zxing/zbar for QR code decoding and write
+an exploit that works.
+
+payload.bin is the shellcode from msfplayload
+nop1.bin is 354 bytes of 0x90
+nop2.bin is 354 bytes of 0x90
+addr.bin is addr to overwite with
+
+To build a proper exploit image:
+
+$ cat nop1.bin payload.bin nop2.bin addr.bin | dmtrwrite -e 8 -o evil.png

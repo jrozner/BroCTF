@@ -9,6 +9,8 @@ ssize_t sendMsg(int, char *, size_t);
 ssize_t sendString(int, char *);
 ssize_t recvUntil(int, char *, size_t, char);
 int getUIdByName(char *);
+int getGIdByName(char *);
 int dropPrivs(char *);
+int validPath(char *, char *);
 
 #endif
