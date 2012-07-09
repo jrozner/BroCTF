@@ -13,25 +13,7 @@
 int barcodez(int);
 
 int main(int argc, char **argv) {
-  int socket, res;
-  struct stat st;
-
-  if ((res = stat(IMG_ROOT, &st)) != 0) {
-    if ((res = mkdir(IMG_ROOT, 0720)) == -1) {
-      perror("mkdir");
-      exit(1);
-    }
-
-    if ((res = chown(IMG_ROOT, getUIdByName(USER), getGIdByName(USER))) == -1) {
-      perror("chown");
-      exit(1);
-    }
-
-    if ((res = chmod(IMG_ROOT, 0720)) == -1) {
-      perror("chmod");
-      exit(1);
-    }
-  }
+  int socket;
 
   daemonize(USER);
 
