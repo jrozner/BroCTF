@@ -11,8 +11,8 @@ extra leet hacker points, switch to zxing/zbar for QR code decoding and write
 an exploit that works.
 
 payload.bin is the shellcode from msfplayload
-nop1.bin is 354 bytes of 0x90
-nop2.bin is 354 bytes of 0x90
+nop1.bin is 329 bytes of 0x90
+nop2.bin is 326 bytes of 0x90
 addr.bin is addr to overwite with
 
 To build a proper exploit image:
