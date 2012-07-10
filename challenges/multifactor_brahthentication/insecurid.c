@@ -33,8 +33,8 @@ int main(int argc, char **argv) {
   fixedTime = currentTime - (currentTime % 60);
 
   /* Seed the random number generator with the fixed time. */
-  srand(fixedTime);
-  num = rand();
+  srandom(fixedTime);
+  num = random();
 
   /* Crazy hackery in order to get each byte from the random number into the
    * character array since we're not using strings. Append the random number
