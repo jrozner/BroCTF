@@ -14,7 +14,7 @@
 int main(int argc, char **argv) {
   unsigned char in[SIZE+sizeof(int)], out[SIZE];
   time_t currentTime = 0, fixedTime = 0;
-  int num, res, i, mask;
+  int num = 0, res = 0, i = 0, mask = 0;
 
   memset(in, 0x0, sizeof(in));
 
