@@ -1,3 +1,4 @@
+#include <sys/types.h>
 #ifndef LIBJACK3D_H_
 #define LIBJACK3D_H_
 
