@@ -1,0 +1,5 @@
+To build:
+$ gcc insecurid.c -o insecurid -lcrypto
+
+To get the token (as a string) setup properly:
+$ echo -n <hash> | xxd -ps -r > ~/.insecurid_token
