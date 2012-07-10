@@ -190,7 +190,7 @@ ssize_t recvUntil(int socket, char *buff, size_t sz, char end) {
 
     read += ret;
 
-    // Client has stopped sending
+    /* Client has stopped sending */
     if ((ret == 0) || (buff[read - 1] == end))
       break;
   }
@@ -248,7 +248,7 @@ int dropPrivs(char *userName) {
   int ngroups = 0, *groupList;
   ngroups = sysconf(_SC_NGROUPS_MAX);
 
-  if (getUIdByName(userName) == getuid()) // check if we need to change user
+  if (getUIdByName(userName) == getuid()) /* check if we need to change user */
     return 0;
 
   if ((groupList = malloc(sizeof(gid_t) * ngroups)) == NULL) {

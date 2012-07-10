@@ -10,6 +10,13 @@
 #define SIZE 1337
 #define IMG_ROOT "/tmp/images/"
 
+/* OH NOEZ! A global var. GCC kept placing the location this pointed to onto
+   the stack in a place that was getting overwritten. I thought it was going
+   to make the challenge a little more difficult than it needed to be so this
+   is a temporary fix until I can figure out a proper way. YAY Heap!
+*/
+FILE *fp;
+
 int barcodez(int);
 
 int main(int argc, char **argv) {
@@ -24,17 +31,14 @@ int main(int argc, char **argv) {
 }
 
 int barcodez(int socket) {
-  char tehfile[60];
+  char tehfile[41];
   char safe[] = IMG_ROOT;
-  char path[sizeof(safe)+40];
-  char cobracmdr[sizeof(path)+9];
+  char cobracmdr[sizeof(tehfile)+sizeof(safe)+9];
   char data[600];
-  char safepath[sizeof(path)];
+  char safepath[sizeof(safe)+sizeof(tehfile)];
   int res = 0;
-  FILE *fp;
 
   memset(tehfile, 0x0, sizeof(tehfile));
-  memset(path, 0x0, sizeof(path));
   memset(cobracmdr, 0x0, sizeof(cobracmdr));
   memset(data, 0x0, sizeof(data));
   memset(safepath, 0x0, sizeof(safepath));
@@ -48,19 +52,16 @@ int barcodez(int socket) {
     exit(1);
   }
 
-  snprintf(path, sizeof(path), "%s%s", safe, tehfile);
+  snprintf(safepath, sizeof(safepath), "%s%s", safe, tehfile);
 
-  if ((res = validPath(safe, path)) == -1) {
+  if ((res = validPath(safe, safepath)) == -1) {
     sendString(socket, "Hey! You can't look in there.\n");
-    fprintf(stderr, "%s is not a valid file path.\n", path);
+    fprintf(stderr, "%s is outside the safe path.\n", safepath);
     close(socket);
     exit(1);
   }
 
-  // Make sure we have a copy of the path that can't get overwritten so we can
-  // remove the file after reading it in.
-  strncpy(path, safepath, sizeof(safepath));
-  snprintf(cobracmdr, sizeof(cobracmdr), "dmtxread %s", path);
+  snprintf(cobracmdr, sizeof(cobracmdr), "dmtxread %s", safepath);
 
   if ((fp = popen(cobracmdr, "r")) == NULL) {
     perror("popen");
@@ -69,8 +70,6 @@ int barcodez(int socket) {
   }
 
   fread(data, SIZE, 1, fp);
-  fclose(fp);
-  unlink(safepath);
 
   if (data[0] == 0x0) {
     sendString(socket, "Looks like you lost your file!\n");
@@ -81,6 +80,8 @@ int barcodez(int socket) {
 
   sendString(socket, data);
 
+  fclose(fp);
+  unlink(safepath);
   close(socket);
   return 0;
 }
