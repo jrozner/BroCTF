@@ -69,7 +69,7 @@ int readToken(unsigned char *token) {
     return -1;
   }
 
-  strncat(path, "/.insecurid_token", PATH_MAX);
+  strncat(path, "/.insecurid_token", PATH_MAX - strlen(path));
 
   if ((fp = fopen(path, "r")) == NULL) {
     fprintf(stderr, "Could not open token file.\n");
