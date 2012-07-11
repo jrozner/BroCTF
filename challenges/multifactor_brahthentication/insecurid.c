@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   printf("Welcome to the InsecurID token generator:\nYour token is: ");
 
   for (i = 0; i < SIZE; i++)
-    printf("%x", out[i]);
+    printf("%02x", out[i]);
 
   printf("\n");
 
