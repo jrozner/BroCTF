@@ -29,7 +29,7 @@
   $out = fread($fp, 100);
   pclose($fp);
 
-  if (($res = preg_match("/([0-9a-f]{40})/m", $out, $matches)) === false) {
+  if (($res = preg_match("/([0-9a-f]{40})/", $out, $matches)) === false) {
     header('HTTP/1.1 500 Internal Server Error');
     die(json_encode(array('msg' => 'Something is broken for realz. Tell us!')));
   }
