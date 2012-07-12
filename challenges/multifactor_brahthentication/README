@@ -1,3 +1,8 @@
+Note: I was too lazy to properly write the login.php code so rather than
+making all of the tokens work I'm just going to hard code one of them and use
+the same binary we're distributing out. Maybe if there's extra time I'll do it
+proper but this is all your getting for now.
+
 To build:
 $ gcc insecurid.c -o insecurid -lcrypto
 
