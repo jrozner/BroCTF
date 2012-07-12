@@ -17,5 +17,3 @@ create table user_tokens (
   token varchar unique not null,
   primary key(id)
 );
-
-create index user_tokens_user_id_idx on user_tokens(user_id);
