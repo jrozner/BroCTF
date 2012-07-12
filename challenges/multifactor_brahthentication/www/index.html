@@ -4,6 +4,7 @@
     <title>Multifactor BRAHthentication</title>
     <link rel="stylesheet" href="css/styles.css" media="screen" />
     <script src="js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="js/application.js" type="text/javascript"></script>
   </head>
   <body>
     <div id="login">
@@ -16,9 +17,13 @@
         <input type="password" name="password" id="password" />
       </div>
       <div class="fields">
-        <button>Login</button>
-        <p id="msg"></p>
+        <label for="token">Token</label><br />
+        <input type="text" name="token" id="token" />
       </div>
+      <div class="fields">
+        <button id="loginButton">Login</button>
+      </div>
+        <p id="msg"></p>
     </div>
   </body>
 </html>
