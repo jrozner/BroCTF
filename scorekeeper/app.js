@@ -1,38 +1,71 @@
-//var io = require('socket.io').listen(8080);
-var pg = require('pg');
+var io = require('socket.io').listen(8080)
+  , pg = require('pg')
+  , db = require('./db/config')
+  , User = require('./lib/user')
+  , scoreboard = require('./lib/scoreboard')
+  , challenge = require('./lib/challenge');
 
-client = new pg.Client({user: 'scorekeeper', password: 'scorekeeper', database: 'scorekeeper'});
+var conString = 'tcp://'+db.username+':'+db.password+'@'+db.hostname+':'+db.port+'/'+db.database;
+client = new pg.Client(conString);
 client.connect();
 
-function login(username, password) {
-  var query = client.query("select * from users where username = $1 and password = $2 limit 1", [username, password], function(data) {
-    return data;
-  });
-}
+client.query('select * from users');
 
-console.log(login('joe','rozner'));
-/*
+io.set('log level', 0);
+
 io.sockets.on('connection', function(socket) {
+  var user = new User();
+
+  user.on('scored', function(msg) {
+    socket.broadcast.emit('update_score', msg);
+  });
+
+  socket.set('user', user, function() {
+    socket.emit('ready')
+  });
 
   socket.on('login', function(data) {
-    if (playerLogin(data.username, data.password) == true) {
-      
-      socket.emit('login_success');
-    } else {
-      socket.emit('login_failure');
-    }
+    socket.get('user', function(user) {
+      if (typeof user === undefined)
+        return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
+
+      user.login(client, socket.emit);
+    });
   });
 
-  socket.on('getBoardData', function() {
-    var visibleBoard = getVisibleBoard(username);
+  socket.on('send_scoreboard', function(data) {
+    socket.get('user', function(user) {
+      if (typeof user === undefined)
+        return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
+
+      if (!user.isLoggedIn())
+        return socket.emit('error', {'msg': "You must be logged in to do that."});
+
+      scoreboard.sendScoreboard(client, socket.emit);
+    });
+  });
+
+  socket.on('send_challenges', function(data) {
+    socket.get('user', function(user) {
+      if (typeof user === undefined)
+        return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
+
+      if (!user.isLoggedIn())
+        return socket.emit('error', {'msg': "You must be logged in to do that."});
+
+      challenge.sendChallenges(client, socket.emit);
+    });
+  });
+
+  socket.on('submit_flag', function(data) {
+    if ((typeof data.challengeId === undefined) || (typeof data.flag === undefined))
+      return socket.emit('error', {'msg': "You must submit a challenge id and flag."});
+
+    socket.get('user', function(user) {
+      if (typeof user === undefined)
+        return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
+
+      user.submitFlag(challengeId, flag, client, socket.emit);
+    });
   });
 });
-
-function playerLogin(username, password) {
-  if (username == 'joe') {
-    return true;
-  } else {
-    return false;
-  }
-}
-*/

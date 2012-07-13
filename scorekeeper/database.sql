@@ -28,6 +28,7 @@ create table user_flags (
   id serial,
   user_id integer not null references users(id) on delete cascade,
   challenge_id integer not null references challenges(id) on delete cascade,
+  time_submitted timestamp with time zone not null default now(),
   unique(user_id, challenge_id),
   primary key(id)
 );

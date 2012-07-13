@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+var _ = require('../lib/_util')
+  , seeds = require('../db/seeds')
+  , pg = require('pg')
+  , db = require('../db/config');
+
+var conString = 'tcp://'+db.username+':'+db.password+'@'+db.hostname+':'+db.port+'/'+db.database;
+client = new pg.Client(conString);
+client.connect();
+
+var remaining = seeds.length;
+
+var sql = "insert into challenges (title, description, tier, flag) values ($1, $2, $3, $4)";
+  for (var i = 0; i < seeds.length; i++) {
+    client.query(sql, [seeds[i].title, seeds[i].description, seeds[i].tier, seeds[i].flag], function(err, result) {
+      if (err) {
+        console.log('Error inserting challenge seeds.');
+        process.exit(1);
+      }
+
+      remaining--;
+      if (remaining === 0)
+        process.exit(0);
+  });
+}
