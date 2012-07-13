@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Score Keeper</title>
+    <link href="css/styles.css" rel="stylesheet" type="text/css" media="screen" />
+    <script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8080/socket.io/socket.io.js"></script>
+    <script>
+    $('document').ready(function() {
+      socket = io.connect('http://localhost:8080');
+      initDom();
+
+      socket.on('connect', function() {
+        console.log('connected');
+      });
+
+      socket.on('disconnect', function() {
+        console.log('disconnected');
+      });
+
+      socket.on('login_success', function() {
+        console.log('login sucessful');
+      });
+
+      socket.on('login_failure', function() {
+        console.log('login failed');
+      });
+    });
+
+    function login(username, password) {
+      socket.emit('login', {'username': username, 'password': password});
+    }
+
+    function initDom() {
+      $('#login_button').click(function() {
+        login($('#username').val(), $('#password').val());
+      });
+
+      $('#login_container').show();
+    }
+
+    function buildPyramid(rows) {
+      var container = document.getElementById('pyramid_container')
+      for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < (i + 1); j++) {
+          var div = document.createElement('div');
+          div.setAttribute('id', i + j);
+          $(div).addClass('building_block');
+          div.innerText = ((rows - i) * 100);
+          container.appendChild(div);
+        }
+
+        var div = document.createElement('div');
+        container.appendChild(div);
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div id="container">
+      <div id="login_container">
+        <p class="field">
+          <input type="text" id="username" name="username" placeholder="Username" />
+        </p>
+        <p class="field">
+          <input type="password" id="password" name="password" placeholder="password" />
+        </p>
+        <p>
+          <input type="button" id="login_button" name="login" value="login" />
+        </p>
+      </div>
+      <div id="pyramid_container">
+      </div>
+      <div id="right_container">
+        <div id="submission_container">
+          <p id="hint">Hamburger short ribs ball tip ham hock shoulder. Pancetta fatback jerky prosciutto ham pork chop. Hamburger pastrami salami jowl, strip steak brisket ball tip pork belly bacon meatball. Tail jerky cow andouille. Brisket pork chop swine, pork belly short loin leberkas ribeye. Pastrami shank ball tip, shankle pork belly meatball swine pork loin biltong speck spare ribs pancetta cow ham hock tail. Speck pork chop cow, leberkas tenderloin ground round swine.</p>
+          <input type="text" id="answer" />
+          <button>Submit</button>
+        </div>
+        <div id="scores_container">
+          <ol id="scores">
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+            <li>Fuck You</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
