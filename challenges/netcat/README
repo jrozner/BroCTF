@@ -1,0 +1,22 @@
+Super straight forward stack overflow with stack cookies which are generated
+using the random() function seeded with the current time on the minute mark.
+However the box has egress filtering that only permits udp traffic on port 53
+to exit the box and the socket is closed before the function returns requiring
+the attacker to use a reverse bind shell
+
+Hard way to solve this:
+Write super awsome udp reverse bind shell that runs over port 53. If someone
+actually does this awesome leet haxor bonus points for you as long as I can get
+a copy because that truly is badass.
+
+Easier way to solve this:
+ncat is installed on the box and supports udp traffic. A clever hacker could
+write some simple exec()/system() shellcode that simply cats the flag file
+into netcat over udp to a listening daemon on a box they control. Also mad
+props for anyone who figures this out because you sir are a resourceful mother
+fucker who's not gonna let a little thing like egress filtering force you to
+crank out some truly awesome but horribly complex shellcode.
+
+Hope anyone who competes enjoys this challenge because it was definitely one of
+my favorites to design this year. Thanks to k9X from #social for all the help
+in coming up with the idea.
