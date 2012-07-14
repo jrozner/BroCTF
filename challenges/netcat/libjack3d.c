@@ -270,7 +270,8 @@ int dropPrivs(char *userName) {
     return -1;
   }
 
-  free(groupList);
+  if (groupList != NULL)
+    free(groupList);
 
   if (setgid(id->pw_gid) == -1) {
     perror("setgid");
