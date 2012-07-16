@@ -38,12 +38,16 @@ iptables -A INPUT -m state --state NEW -i bond0.1 -s 10.100.0.0/24 -j ACCEPT
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -i bond0.1 -j ACCEPT
 iptables -A INPUT -m state --state NEW -i bond0.1 -j DROP
 
+
 # Allow admin/DJ's onto the wider internet
 iptables -t nat -A POSTROUTING -o bond0.69 -j MASQUERADE
 iptables -A FORWARD -i bond0.69 -o bond0.100 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i bond0.100 -o bond0.69 -s 10.200.0.0/24 -j ACCEPT
 iptables -A FORWARD -i bond0.69 -o bond0.1 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i bond0.1 -o bond0.69 -s 10.100.0.0/24 -j ACCEPT
+#### TEMPORARILY ALLOW GAMES ONTO INTARWEBS ####
+#iptables -A FORWARD -i bond0.69 -o bond0.2 -m state --state RELATED,ESTABLISHED -j ACCEPT
+#iptables -A FORWARD -i bond0.2 -o bond0.69 -s 10.2.0.0/24 -j ACCEPT
 
 # Allow game network to connect to player network, giggety.
 iptables -A INPUT -i bond0.2 -s 10.2.0.0/24 -j ACCEPT
