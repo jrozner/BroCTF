@@ -22,3 +22,5 @@
 5) base64 -d somefile.txt > brotips.db4.xz
 6) xz brotips.db4.xz
 7) db_dump brotips.db4 | grep key 
+
+-- nick
