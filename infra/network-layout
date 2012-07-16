@@ -1,0 +1,46 @@
+// BroCTF 2012 Networking
+
+Jump Boxes:
+
+These worked fairly well in 2011, even if the team who set them up were retarded.  So we're doing it right this year.  Teams won't be bridged directly onto the challenge network, so stupid people can be k-lined at the router without hurting anyone else.  
+
+The jump box will have 2 interfaces:
+ - A "private" interface that only the directly connected team has access to.
+   - The physical VLAN will be 1000 + port number on the switch.
+     - e.g.: the team on port 48 will have their VLAN Tag be 1048.
+   - The IP subnet will be 10.0.0.0/24 with DHCP enabled.
+ - The "public" interface of the jump box will connect to the router, and by design, the rest of the jump boxes.
+   - The physical VLAN will be 1100 + port number the team is connecting on.
+   - The IP subnet will be 10.1.0.X/30, with the 4th octet according to the forumla X = ((VLAN - 1101) * 4)+2. 
+     - e.g.: The team on port 48 will have a 4th octet of 190, and the subnet will be 10.1.0.188/30.
+
+Router:
+
+The router will still need ~50 VLANs.  48 for the public interfaces of the players (the other 48 private VLAN interfaces will be only seen on the switches themselves), one for the challenge network(free for all access),  one for administrators (no inbound allowed) and one for the defcon drop (admin ONLY, drop everything else.)
+
+For the routing tables, this year we're going to allow players to attack eachother on layer 3.  This simplifies the ACL's dramatically.  In short, all we have to ACL around is the public internet (allow admin only, drop other) and the admin interface (no incoming, all outgoing allowed).  
+Ideally, LACP into switch 1 for roflscale bandwidth.
+
+Switches:
+
+Switch 1: 24 port gigE managed HP switch.  Two ports will be LACP'd (*statically!*) to switch 2, carrying VLAN tags 1 and 1000-10048.  Two ports will be LACP'd to each VM server.  The player machine will carry VLAN Tag's 1000-1048 and 1100-1148 (private and public jump boxes) and the admin interface.  The game machine will carry the game VLAN and the administrative VLAN.
+
+Switch 2: 48 port 10/100 + 2 1000 ports.  Ports 1-48 will each carry one VLAN, untagged, which will be the port number + 1000.  Ports 49 and 50 will be LACP'd (*statically!*) up to switch 2, tagged, and carrying all player VLAN's, as well as the admin VLAN (for managing switch 2).  
+
+^^^^ NOTE: MUST USE CHROME TO CONFIGURE THIS SWITCH.  FF FUCKS IT UP.
+
+Networks:
+
+Private player subnet: 10.0.1.0/24, DHCP from jump box
+Public player subnet: 10.1.0.X/30, where X = (VLANTAG-1100) * 4, DHCP from router
+
+Example: for first VLAN player port 1...
+-- Network:   10.1.0.0    <-- player VLAN  - 1101
+-- Router IP: 10.1.0.1/30 <-- network +1
+-- VM IP:     10.1.0.2/30 <-- network +2
+-- Broadcast: 10.1.0.3    <-- network +3
+
+Game network: 10.2.0.0/24, fixed IP VLAN ID 2
+Admin: 10.100.0.0/24, DHCP from router VLAN ID 1 (magic IP's .13, .42, .69 and .123)
+DJ/VJ VLAN: 10.200.0.0/24, DHCP from router, isolated to internet only, VLAN 100
+Interwebs: Whatever Defcon gives us, likely DHCP.  VLAN ID 69

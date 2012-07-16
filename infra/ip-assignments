@@ -1,0 +1,12 @@
+// Phyiscal Machines
+beast: 10.100.0.10
+burden: 10.100.0.11
+files: 10.2.0.12
+irda: 10.2.0.14
+
+// Virtual Machines
+barcodez: 10.2.0.2
+brosql:	 10.2.0.3
+brahthentication:	10.2.0.4
+dual:     10.2.0.5
+
