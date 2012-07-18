@@ -19,6 +19,7 @@ create table challenges (
   description text unique,
   tier integer not null,
   flag varchar(40) unique,
+  value integer not null,
   primary key(id)
 );
 

@@ -17,8 +17,14 @@ io.sockets.on('connection', function(socket) {
   var user = new User();
 
   user.on('scored', function(msg) {
-    socket.broadcast.emit('update_score', msg);
+    io.sockets.broadcast.emit('update_score', msg);
   });
+
+  user.on('error', function(msg) {
+    /* Should probably do some sort of logging here. It should only happen if there's a problem
+     * on the server side.
+     */
+  }
 
   socket.set('user', user, function() {
     socket.emit('ready')
