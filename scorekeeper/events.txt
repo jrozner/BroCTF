@@ -1,0 +1,19 @@
+Server Events
+  ready - Server is ready for user
+  update_score - A team has scored. Update the scoreboard
+  msg - Display this
+  error - Generic error event
+  scoreboard - Here is the current scoreboard
+  invalid_flag - Submitted flag is not valid
+  flag_accepted - Flag was correct for specified challenge
+  invalid_login - Credentials are invalid
+  logged_in - Credentials accepted
+  tier_unlocked - Add new challenge tier
+  new_team - New team has been added
+  remove_team - Team has been removed
+
+Client Events:
+  login - Login with supplied credentials
+  send_scoreboard - Return full scoreboard
+  send_challenges - Return full challenge board of open tiers
+  submit_flag - Submit flag for specified challenge

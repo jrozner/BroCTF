@@ -26,7 +26,7 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('login', function(data) {
     socket.get('user', function(user) {
-      if (typeof user === undefined)
+      if (user === undefined)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
       user.login(client, socket.emit);
@@ -35,7 +35,7 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('send_scoreboard', function(data) {
     socket.get('user', function(user) {
-      if (typeof user === undefined)
+      if (user === undefined)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
       if (!user.isLoggedIn())
@@ -47,7 +47,7 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('send_challenges', function(data) {
     socket.get('user', function(user) {
-      if (typeof user === undefined)
+      if (user === undefined)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
       if (!user.isLoggedIn())
@@ -58,11 +58,11 @@ io.sockets.on('connection', function(socket) {
   });
 
   socket.on('submit_flag', function(data) {
-    if ((typeof data.challengeId === undefined) || (typeof data.flag === undefined))
+    if ((data.challengeId === undefined) || (data.flag === undefined))
       return socket.emit('error', {'msg': "You must submit a challenge id and flag."});
 
     socket.get('user', function(user) {
-      if (typeof user === undefined)
+      if (user === undefined)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
       user.submitFlag(challengeId, flag, client, socket.emit);

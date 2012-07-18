@@ -43,7 +43,7 @@ User.prototype.submitFlag = function(challengeId, flag, client, cb) {
 }
 
 User.prototype.isLoggedIn = function() {
-  if (typeof this.id === undefined)
+  if (this.id === undefined)
     return false;
 
   return true;
