@@ -1,0 +1,17 @@
+.building_block {
+  display: inline-block;
+  width: 74px;
+  height: 74px;
+  margin: 5px 5px;
+  line-height: 75px;
+  cursor: pointer;
+}
+
+.unopened {
+}
+
+.open {
+}
+
+.solved {
+}
