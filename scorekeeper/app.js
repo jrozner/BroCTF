@@ -39,42 +39,48 @@ io.sockets.on('connection', function(socket) {
     /* Should probably do some sort of logging here. It should only happen if there's a problem
      * on the server side.
      */
-  }
+  });
 
   socket.set('user', user, function() {
     socket.emit('ready')
   });
 
   socket.on('login', function(data) {
-    socket.get('user', function(user) {
-      if (user === undefined)
+    socket.get('user', function(err, user) {
+      if (err)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
-      user.login(client, socket.emit);
+      user.login(data.username, data.password, client, function(evt, msg) {
+        socket.emit(evt, msg);
+      });
     });
   });
 
   socket.on('send_scoreboard', function(data) {
-    socket.get('user', function(user) {
-      if (user === undefined)
+    socket.get('user', function(err, user) {
+      if (err)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
       if (!user.isLoggedIn())
         return socket.emit('error', {'msg': "You must be logged in to do that."});
 
-      scoreboard.sendScoreboard(client, socket.emit);
+      scoreboard.sendScoreboard(client, function(evt, msg) {
+        socket.emit(evt, msg);
+      });
     });
   });
 
   socket.on('send_challenges', function(data) {
-    socket.get('user', function(user) {
-      if (user === undefined)
+    socket.get('user', function(err, user) {
+      if (err)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
       if (!user.isLoggedIn())
         return socket.emit('error', {'msg': "You must be logged in to do that."});
 
-      challenge.sendChallenges(client, socket.emit);
+      challenge.sendChallenges(client, function(evt, msg) {
+        socket.emit(evt, msg);
+      });
     });
   });
 
@@ -82,11 +88,13 @@ io.sockets.on('connection', function(socket) {
     if ((data.challengeId === undefined) || (data.flag === undefined))
       return socket.emit('error', {'msg': "You must submit a challenge id and flag."});
 
-    socket.get('user', function(user) {
-      if (user === undefined)
+    socket.get('user', function(err, user) {
+      if (err)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
-      user.submitFlag(challengeId, flag, client, socket.emit);
+      user.submitFlag(challengeId, flag, client, function(evt, msg) {
+        socket.emit(evt, msg);
+      });
     });
   });
 });
