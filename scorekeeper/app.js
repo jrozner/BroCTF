@@ -26,8 +26,6 @@ var conString = 'tcp://'+db.username+':'+db.password+'@'+db.hostname+':'+db.port
 client = new pg.Client(conString);
 client.connect();
 
-client.query('select * from users');
-
 io.sockets.on('connection', function(socket) {
   var user = new User();
 
