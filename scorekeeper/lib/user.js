@@ -36,14 +36,14 @@ User.prototype.submitFlag = function(challengeId, flag, client, cb) {
       return cb(evt, msg);
 
     self._captureFlag(client, msg.challengeId, function() {
-      self.emit('scored', {'teamId': self.id, 'value': msg.value});
+      scoreboard.getScoreByTeam(client, self.id, self.emit)
       return cb(evt, msg);
     });
   });
 }
 
 User.prototype.isLoggedIn = function() {
-  if (typeof this.id === undefined)
+  if (this.id === undefined)
     return false;
 
   return true;

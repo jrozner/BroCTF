@@ -1,0 +1,41 @@
+#login {
+  width: 350px;
+  height: 180px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -90px 0 0 -175px;
+  padding: 14px 0 0 0;
+  border: 2px dashed #00f;
+}
+
+#login > .fields {
+  padding: 4px; 0 4px; 0;
+}
+
+#login > .fields label {
+  margin: 0 0 0 25px;
+  font-size: 24px;
+  font-family: sans-serif;
+}
+
+#login > .fields input[type='text'], #login > .fields input[type='password'] {
+  width: 290px;
+  height: 24px;
+  border: 1px dashed #00f;
+  margin: 0 0 0 25px;
+  background-color: #000;
+  color: #00f;
+  line-height: 24px;
+  font-size: 18px;
+}
+
+#login > .fields button {
+  height: 28px;
+  width: 60px;
+  border: 1px dashed #00f;
+  background-color: #000;
+  color: #00f;
+  margin: 0 0 0 25px;
+  font-size: 14px;
+}
