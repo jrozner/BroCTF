@@ -19,7 +19,7 @@
   font-family: sans-serif;
 }
 
-#login > .fields input[type='text'], #login > .fields input[type='password'] {
+#login > .fields input[type="text"], #login > .fields input[type="password"] {
   width: 290px;
   height: 24px;
   border: 1px dashed #00f;

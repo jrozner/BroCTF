@@ -3,5 +3,6 @@ body {
   color: #00f;
 }
 
-#container {
+.hidden {
+  display: none;
 }

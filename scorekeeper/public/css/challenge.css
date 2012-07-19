@@ -1,3 +1,54 @@
+#container {
+  width: 800px;
+  margin: 0 auto 0 auto;
+}
+
+#header {
+  width: 800px;
+  height: 24px;
+  border: 1px dashed #00f;
+  margin: 0 0 8px 0;
+}
+
+#team {
+  float: left;
+  line-height: 24px;
+  margin: 0 0 0 4px;
+}
+
+#score {
+  float: right;
+  line-height: 24px;
+  margin: 0 4px 0 0;
+}
+
+#pyramid {
+  width: 495px;
+  height: 500px;
+  border: 1px dashed #00f;
+  float: left;
+}
+
+#right {
+  width: 295px;
+  float: right;
+}
+
+#challenge {
+  width: 100%;
+  height: 248px;
+  border: 1px dashed #00f;
+  margin: 0 0 4px 0;
+  padding: 4px 2px 0 2px;
+}
+
+#scoreboard {
+  width: 100%;
+  height: 248px;
+  border: 1px dashed #00f;
+  margin: 4px 0 0 0;
+}
+
 .building_block {
   display: inline-block;
   width: 74px;
@@ -5,9 +56,6 @@
   margin: 5px 5px;
   line-height: 75px;
   cursor: pointer;
-}
-
-.unopened {
 }
 
 .open {
