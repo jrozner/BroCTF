@@ -1,17 +1,32 @@
-var io = require('socket.io').listen(8080)
+var app = require('http').createServer(handler)
+  , io = require('socket.io').listen(app)
+  , util = require('util')
+  , fs = require('fs')
   , pg = require('pg')
   , db = require('./db/config')
   , User = require('./lib/user')
   , scoreboard = require('./lib/scoreboard')
   , challenge = require('./lib/challenge');
 
+app.listen(8080);
+
+function handler(req, res) {
+  fs.readFile(__dirname+'/public'+req.url,
+  function (err, data) {
+    if (err) {
+      res.writeHead(500);
+    }
+
+    res.writeHead(200);
+    res.end(data);
+  });
+}
+
 var conString = 'tcp://'+db.username+':'+db.password+'@'+db.hostname+':'+db.port+'/'+db.database;
 client = new pg.Client(conString);
 client.connect();
 
 client.query('select * from users');
-
-io.set('log level', 0);
 
 io.sockets.on('connection', function(socket) {
   var user = new User();
