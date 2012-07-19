@@ -1,3 +1,9 @@
+exports.sendChallenges = function() {
+  // do logic to bail early
+  // get open challenges
+  // send back open challenges
+}
+
 exports.verifyFlag = function(challengeId, flag, client, cb) {
   var sql = 'select id from challenges where id = $1 and flag = $2';
   client.query(sql, [challengeId, flag], function(err, result) {
