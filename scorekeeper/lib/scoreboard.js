@@ -13,6 +13,6 @@ exports.getScoreByTeam = function(client, teamId, cb) {
     if (result.rows.length < 1)
       return cb('error', {'msg': 'Could not find any flags that you have captured. Something is wrong here.'});
 
-    return cb('scored', {'teamId': teamId, 'score': result.rows[0].score);
+    return cb('scored', {'teamId': teamId, 'score': result.rows[0].score});
   });
 }
