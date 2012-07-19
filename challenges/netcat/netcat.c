@@ -15,7 +15,7 @@ void checkCanary(int, int *);
 int main(int argc, char **argv) {
   int socket;
 
-  //daemonize(USER);
+  daemonize(USER);
 
   if ((socket = initListener(NULL, PORT)) == -1)
     exit(1);
