@@ -46,14 +46,17 @@ iptables -A FORWARD -i bond0.100 -o bond0.69 -s 10.200.0.0/24 -j ACCEPT
 iptables -A FORWARD -i bond0.69 -o bond0.1 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i bond0.1 -o bond0.69 -s 10.100.0.0/24 -j ACCEPT
 #### TEMPORARILY ALLOW GAMES ONTO INTARWEBS ####
-#iptables -A FORWARD -i bond0.69 -o bond0.2 -m state --state RELATED,ESTABLISHED -j ACCEPT
-#iptables -A FORWARD -i bond0.2 -o bond0.69 -s 10.2.0.0/24 -j ACCEPT
+iptables -A FORWARD -i bond0.69 -o bond0.2 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i bond0.2 -o bond0.69 -s 10.2.0.0/24 -j ACCEPT
 
 # Allow game network to connect to player network, giggety.
 iptables -A INPUT -i bond0.2 -s 10.2.0.0/24 -j ACCEPT
 iptables -A FORWARD -i bond0.2 -d 10.1.0.0/24 -j ACCEPT
 
 # Allow players to connect to game.
+# But specifically deny them from connecting to files on anything other than 80
+# just prior to the blanket accept.
+iptables -A INPUT -s 10.1.0.0/24 -d 10.2.0.12 -m tcp -p tcp ! --dport 80 -j DROP
 iptables -A INPUT -s 10.1.0.0/24 -d 10.2.0.0/24 -j ACCEPT
 iptables -A FORWARD -s 10.1.0.0/24 -d 10.2.0.0/24 -j ACCEPT
 
