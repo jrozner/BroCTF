@@ -11,9 +11,9 @@ client.connect();
 
 var remaining = seeds.length;
 
-var sql = "insert into challenges (title, description, tier, flag) values ($1, $2, $3, $4)";
+var sql = "insert into challenges (title, description, tier, flag, value) values ($1, $2, $3, $4, $5)";
   for (var i = 0; i < seeds.length; i++) {
-    client.query(sql, [seeds[i].title, seeds[i].description, seeds[i].tier, seeds[i].flag], function(err, result) {
+    client.query(sql, [seeds[i].title, seeds[i].description, seeds[i].tier, seeds[i].flag, seeds[i].value], function(err, result) {
       if (err) {
         console.log('Error inserting challenge seeds.');
         process.exit(1);
