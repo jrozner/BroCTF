@@ -36,17 +36,45 @@
 
 #challenge {
   width: 100%;
-  height: 248px;
+  height: 200px;
   border: 1px dashed #00f;
-  margin: 0 0 4px 0;
-  padding: 4px 2px 0 2px;
+  margin: 0 0 8px 0;
 }
 
-#scoreboard {
-  width: 100%;
-  height: 248px;
+#hint {
+  margin: 4px 4px 20px 4px;
+}
+
+#challenge > .fields {
+  margin: 0 4px 0 4px;
+}
+
+#challenge > .fields input[type="text"] {
+  width: 282px;
+  margin: 0 0 0 0;
   border: 1px dashed #00f;
+  background-color: #000;
+  color: #00f;
+}
+
+#challenge > .fields button {
+  border: 1px dashed #00f;
+  background-color: #000;
+  color: #00f;
   margin: 4px 0 0 0;
+  font-size: 14px;
+}
+
+#scoreboard_container {
+  width: 100%;
+  height: 290px;
+  border: 1px dashed #00f;
+  margin: 8px 0 0 0;
+  overflow: auto;
+}
+
+#scoreboard_container > h2 {
+  margin: 10px 0 0 12px;
 }
 
 .building_block {
