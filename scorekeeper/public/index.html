@@ -8,7 +8,7 @@
     <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
   </head>
   <body>
-    <div id="login">
+    <div id="login" class="hidden">
       <div class="fields">
         <label for="username">Username</label><br />
         <input type="text" id="username" name="username" />
@@ -23,22 +23,25 @@
     </div>
     <div id="container" class="hidden">
       <div id="header">
-        <span id="team">Team: loldongs</span><span id="score">Score: 500</span>
+        <span id="team"></span><span id="score" data-user-id=""></span>
       </div>
       <div id="pyramid">
       </div>
       <div id="right">
         <div id="challenge">
-          <p>Sausage venison kielbasa cow, biltong tri-tip beef ribs filet mignon ball tip jowl frankfurter. Pork chop tail beef ribs shoulder, turducken ground round sirloin venison shankle chicken.</p>
+          <div id="hint">Sausage venison kielbasa cow, biltong tri-tip beef ribs filet mignon ball tip jowl frankfurter. Pork chop tail beef ribs shoulder, turducken ground round sirloin venison shankle chicken.</div>
           <div class="fields">
             <label for="flag">Flag</label><br />
-            <input type="text" name="flag" id="flag" />
+            <input type="text" name="flag" id="flag" data-challenge-id="8" />
           </div>
           <div class="fields">
-            <button>Pwn!</button>
+            <button id="pwn">Pwn!</button>
           </div>
         </div>
-        <div id="scoreboard">
+        <div id="scoreboard_container">
+          <h2>Scoreboard</h2>
+          <ol id="scoreboard">
+          </ol>
         </div>
       </div>
     </div>

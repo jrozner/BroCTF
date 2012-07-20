@@ -1,18 +1,25 @@
-exports.getBoard = function(client, cb) {
+exports.getScores = function(client, cb) {
+  var sql = 'select u.username, sum(c.value) as score from user_flags uf inner join users u on u.id = uf.user_id inner join challenges c on c.id = uf.challenge_id group by (u.id) order by score desc';
+  client.query(sql, function(err, result) {
+    if (err)
+      return cb('error', {'msg': err});
+
+    return cb('scoreboard', result.rows);
+  });
 }
 
-exports.getScoreByTeam = function(client, teamId, cb) {
-  if (teamId === undefined)
+exports.getScoreByUserId = function(client, userId, cb) {
+  if (userId === undefined)
     return false;
 
   var sql = 'select sum(c.value) as score from challenges c inner join user_flags uf on uf.challenge_id = c.id where uf.user_id = $1';
-  client.query(sql, [teamId], function(err, result) {
+  client.query(sql, [userId], function(err, result) {
     if (err)
       return cb('error', {'msg': err});
 
     if (result.rows.length < 1)
       return cb('error', {'msg': 'Could not find any flags that you have captured. Something is wrong here.'});
 
-    return cb('scored', {'teamId': teamId, 'score': result.rows[0].score});
+    return cb('score', {'userId': userId, 'score': result.rows[0].score});
   });
 }

@@ -9,6 +9,7 @@ var app = require('http').createServer(handler)
   , challenge = require('./lib/challenge');
 
 app.listen(8080);
+io.set('log level', 0);
 
 function handler(req, res) {
   fs.readFile(__dirname+'/public'+req.url,
@@ -29,8 +30,8 @@ client.connect();
 io.sockets.on('connection', function(socket) {
   var user = new User();
 
-  user.on('scored', function(msg) {
-    io.sockets.broadcast.emit('update_score', msg);
+  user.on('score', function(msg) {
+    io.sockets.emit('update_score', msg);
   });
 
   user.on('error', function(msg) {
@@ -62,7 +63,7 @@ io.sockets.on('connection', function(socket) {
       if (!user.isLoggedIn())
         return socket.emit('error', {'msg': "You must be logged in to do that."});
 
-      scoreboard.sendScoreboard(client, function(evt, msg) {
+      scoreboard.getScores(client, function(evt, msg) {
         socket.emit(evt, msg);
       });
     });
@@ -83,14 +84,11 @@ io.sockets.on('connection', function(socket) {
   });
 
   socket.on('submit_flag', function(data) {
-    if ((data.challengeId === undefined) || (data.flag === undefined))
-      return socket.emit('error', {'msg': "You must submit a challenge id and flag."});
-
     socket.get('user', function(err, user) {
       if (err)
         return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
 
-      user.submitFlag(challengeId, flag, client, function(evt, msg) {
+      user.submitFlag(data.challengeId, data.flag, client, function(evt, msg) {
         socket.emit(evt, msg);
       });
     });

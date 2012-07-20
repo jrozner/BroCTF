@@ -1,6 +1,7 @@
 var events = require('events')
   , _ = require('./_util')
-  , challenge = require('./challenge');
+  , challenge = require('./challenge')
+  , scoreboard = require('./scoreboard');
 
 function User() {
   this.id = undefined;
@@ -11,14 +12,14 @@ User.prototype = new events.EventEmitter;
 User.prototype.login = function(username, password, client, cb) {
   var self = this;
 
-  var sql = 'select id, username from users where username = $1 and password = $2 limit 1';
+  var sql = 'select u.id, u.username, sum(c.value) as score from users u inner join user_flags uf on u.id = uf.user_id inner join challenges c on uf.challenge_id = c.id where username = $1 and password = $2 group by u.id limit 1';
   client.query(sql, [username, _.sha1(password)], function(err, result) {
     if (err)
       return cb('error', {'msg': "There was a problem with the database. Perhaps you're trying something you shouldn't be?"});
 
     if (result.rows.length > 0) {
       self.id = result.rows[0].id;
-      cb('logged_in');
+      cb('logged_in', {'userId': result.rows[0].id, 'username': result.rows[0].username, 'score': result.rows[0].score});
     } else {
       cb('invalid_login', {'msg': "Invalid username or password."});
     }
@@ -31,13 +32,26 @@ User.prototype.submitFlag = function(challengeId, flag, client, cb) {
   if (!this.isLoggedIn())
     return cb('error', {'msg': "You are not logged in."});
 
-  challenge.verifyFlag(challengeId, flag, client, function(isValid, evt, msg) {
-    if (isValid === false)
-      return cb(evt, msg);
+  if ((challengeId === undefined) || (challengeId === '') || (flag === undefined) || (flag === ''))
+    return cb('error', {'msg': 'You must submit a flag and challenge id.'});
 
-    self._captureFlag(client, msg.challengeId, function() {
-      scoreboard.getScoreByTeam(client, self.id, self.emit)
-      return cb(evt, msg);
+  challenge.verifyFlag(client, challengeId, flag, function(isValid) {
+    if (isValid === false)
+      return cb('invalid_flag');
+
+    self._checkSubmitted(client, challengeId, function(isSubmitted) {
+      if (isSubmitted === true)
+        return cb('error', {'msg': 'That flag has already been submitted.'});
+
+      self._captureFlag(client, challengeId, function(isCaptured) {
+        if (isCaptured === false)
+          return cb('error', {'msg': 'Unable to capture flag.'});
+
+        scoreboard.getScoreByUserId(client, self.id, function(evt, msg) {
+          self.emit(evt, msg);
+        });
+        return cb('flag_accepted', {'challengeId': challengeId, });
+      });
     });
   });
 }
@@ -49,10 +63,29 @@ User.prototype.isLoggedIn = function() {
   return true;
 }
 
+User.prototype._checkSubmitted = function(client, challengeId, cb) {
+  var sql = 'select id from user_flags where user_id = $1 and challenge_id = $2';
+
+  client.query(sql, [this.id, challengeId], function(err, result) {
+    if (err)
+      return cb(false);
+
+    if (result.rows.length > 0)
+      return cb(true);
+
+    return cb(false);
+  });
+}
+
 User.prototype._captureFlag = function(client, challengeId, cb) {
   var sql = 'insert into user_flags (user_id, challenge_id) values ($1, $2)';
 
-  client.query(sql, [this.id, challengeId], cb);
+  client.query(sql, [this.id, challengeId], function(err) {
+    if (err)
+      return cb(false);
+
+    return cb(true);
+  });
 }
 
 module.exports = User;
