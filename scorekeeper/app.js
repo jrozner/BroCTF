@@ -31,6 +31,7 @@ io.sockets.on('connection', function(socket) {
   var user = new User();
 
   user.on('score', function(msg) {
+    socket.score('score', {'score': msg.score});
     io.sockets.emit('update_score', msg);
   });
 

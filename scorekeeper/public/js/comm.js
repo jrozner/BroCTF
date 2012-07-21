@@ -6,11 +6,11 @@ var socket = io.connect('127.0.0.1:8080');
 socket.on('ready', displayLogin);
 socket.on('logged_in', completeLogin);
 socket.on('scoreboard', drawScoreboard);
-//socket.on('challenges', populateChallenges);
+socket.on('challenges', populateChallenges);
 socket.on('score', updateScore);
 socket.on('flag_accepted', flagAccepted);
 socket.on('invalid_flag', invalidFlag);
-socket.on('update_score', updateScore);
+socket.on('update_scoreboard', updateScoreboard);
 //socket.on('msg', displayMsg);
 //socket.on('error', displayError);
 
@@ -59,12 +59,13 @@ function drawScoreboard(data) {
   for (var i = 0; i < data.length; i++) {
     var li = document.createElement('li');
     li.innerText = data[i].username+': '+data[i].score;
+    li.setAttribute('data-user-id', data[i].id);
     scoreboard.appendChild(li);
   }
 }
 
 function populateChallenges(data) {
-  var pyramid = document.getElementById('#pyramid')
+  var pyramid = document.querySelector('#pyramid')
   for (var i = 0; i < 5; i++) {
     for (var j = 0; j < (i + 1); j++) {
       var div = document.createElement('div');
@@ -102,4 +103,7 @@ function updateScore(data) {
 
   if (uid === data.userId)
     scoreObj.innerText = 'Score: '+data.score;
+}
+
+function updateScoreboard(data) {
 }
