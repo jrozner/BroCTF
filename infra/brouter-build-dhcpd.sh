@@ -46,7 +46,7 @@ subnet 10.100.0.0 netmask 255.255.255.0 {
 	option subnet-mask 255.255.255.0;
 	option routers 10.100.0.1;
 	option domain-name "broc.tf";
-	option domain-name-servers 8.8.8.8, 4.2.2.2, 10.2.0.12;
+	option domain-name-servers 10.2.0.12, 8.8.8.8, 4.2.2.2;
 	range 10.100.0.200 10.100.0.250;
 
 	# Magic IP's for awesome bros
@@ -77,7 +77,7 @@ subnet $NETWORK netmask $SUBNET {
 	option subnet-mask $SUBNET;
 	option routers $ROUTER;
 	option domain-name "broc.tf";
-	option domain-name-servers 10.2.0.12, 10.2.0.13;
+	option domain-name-servers 10.2.0.12;
 	range $JUMP $JUMP; # CRISS CROSS!
 
 }
