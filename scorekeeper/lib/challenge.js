@@ -18,5 +18,5 @@ exports.verifyFlag = function(client, challengeId, flag, cb) {
   });
 }
 
-exports.currentTier() {
+exports.currentTier = function() {
 }
