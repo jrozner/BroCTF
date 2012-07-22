@@ -1,3 +1,6 @@
+WARNING!!!
+There are spoilers in /challenges. Don't read the readme's if you don't want hints
+
 /challenges  : the code and docs on each challenge.
 /infra       : config files and the scripts that made them, for the router, hypervisors, etc.
 /logo        : the original source files for the BroCTF logo. Thanks, openclipart.com!
