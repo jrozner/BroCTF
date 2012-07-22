@@ -1,0 +1,22 @@
+; broc.tf zone lol
+
+$TTL 86400
+
+@       IN      SOA     ns1.broc.tf.      hostmaster.broc.tf. (
+                        2012072101      ; serial number YYMMDDNN
+                        28800           ; Refresh
+                        7200            ; Retry
+                        864000          ; Expire
+                        86400           ; Min TTL
+                        )
+
+                NS      ns1.broc.tf.
+
+$ORIGIN broc.tf.
+broc.tf.                       IN       TXT     "s17s148805505310r276r0q249825q2qp1r280sp"
+ns1                     360000 IN       A       10.2.0.12
+static                  360000 IN       A       10.2.0.12
+barcodez                360000 IN       A       10.2.0.2
+brosql                  360000 IN       A       10.2.0.3
+brahthentication        360000 IN       A       10.2.0.4
+dual                    360000 IN       A       10.2.0.5
