@@ -13,6 +13,7 @@ socket.on('invalid_flag', invalidFlag);
 socket.on('update_scoreboard', updateScoreboard);
 //socket.on('msg', displayMsg);
 //socket.on('error', displayError);
+socket.on('play_sound', playSound);
 
 function login() {
   var username = document.querySelector('#username').value;
@@ -42,8 +43,8 @@ function completeLogin(data) {
   usernameObj.value = '';
   passwordObj.value = '';
 
-  teamObj.innerText = 'Team: '+data.username;
-  scoreObj.innerText = 'Score: '+data.score;
+  teamObj.textContent = 'Team: '+data.username;
+  scoreObj.textContent = 'Score: '+data.score;
   scoreObj.setAttribute('data-user-id', data.userId);
 
   var classes = loginObj.getAttribute('class');
@@ -51,6 +52,8 @@ function completeLogin(data) {
 
   var classes = containerObj.getAttribute('class');
   containerObj.setAttribute('class', classes.replace(/hidden\s*/, ''));
+
+  playSound({'name': 'prepare'});
 }
 
 function drawScoreboard(data) {
@@ -58,7 +61,7 @@ function drawScoreboard(data) {
 
   for (var i = 0; i < data.length; i++) {
     var li = document.createElement('li');
-    li.innerText = data[i].username+': '+data[i].score;
+    li.textContent = data[i].username+': '+data[i].score;
     li.setAttribute('data-user-id', data[i].id);
     scoreboard.appendChild(li);
   }
@@ -71,7 +74,7 @@ function populateChallenges(data) {
       var div = document.createElement('div');
       div.setAttribute('id', i + j);
       div.setAttribute('class', 'building_block');
-      div.innerText = ((rows - i) * 100);
+      div.textContent = ((rows - i) * 100);
       pyramid.appendChild(div);
     }
 
@@ -102,8 +105,20 @@ function updateScore(data) {
   var uid = parseInt(scoreObj.getAttribute('data-user-id'));
 
   if (uid === data.userId)
-    scoreObj.innerText = 'Score: '+data.score;
+    scoreObj.textContent = 'Score: '+data.score;
 }
 
 function updateScoreboard(data) {
+}
+
+function playSound(data) {
+  if ((data.name === undefined) || (data.name === ''))
+    return;
+
+  var audio = document.querySelector('#sound_'+data.name);
+
+  if (audio === null)
+    return;
+
+  audio.play();
 }
