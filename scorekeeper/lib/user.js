@@ -12,7 +12,7 @@ User.prototype = new events.EventEmitter;
 User.prototype.login = function(username, password, client, cb) {
   var self = this;
 
-  var sql = 'select u.id, u.username, sum(c.value) as score from users u inner join user_flags uf on u.id = uf.user_id inner join challenges c on uf.challenge_id = c.id where username = $1 and password = $2 group by u.id limit 1';
+  var sql = 'select u.id, u.username, coalesce(sum(c.value),0) as score from users u left join user_flags uf on u.id = uf.user_id left join challenges c on uf.challenge_id = c.id where username = $1 and password = $2 group by u.id limit 1';
   client.query(sql, [username, _.sha1(password)], function(err, result) {
     if (err)
       return cb('error', {'msg': "There was a problem with the database. Perhaps you're trying something you shouldn't be?"});
