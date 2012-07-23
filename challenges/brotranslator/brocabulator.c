@@ -34,7 +34,6 @@ int main( int argc, char **argv ) {
 int translate( int socket ) {
     // Payload here.
     char brocabulary[WORDLEN];
-    char supstack[2048];
     int res = 0;
     volatile char *broskey = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
     sendString( socket, "Sup bro?\n" );
@@ -45,10 +44,9 @@ int translate( int socket ) {
             close(socket);
             return 1;
         }
-        
-        sprintf( supstack, brocabulary );   // vulnerable!
+        char supstack[100];
         volatile char *broskey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-        sendString( socket, supstack );
+        dprintf( socket, brocabulary ); // NICE. Vulerable output direct to a socket.
     }
     close( socket );
     return 0;
