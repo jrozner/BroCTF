@@ -1,0 +1,46 @@
+// Brocabulator
+//
+// Give it a word, it brocabularizes it, and returns it to you.
+// Has a format string vuln here to allow you to read down the stack.
+//
+#include <string>
+#include <iostream>
+#include <cstdio>
+#include "libjack3d.h"
+
+#define USER "broseph"
+#define PORT 8008
+#define BROMANCE "/usr/lib/brocabulary/bro"
+#define WORDLEN 129
+
+int translate( int );
+
+int main( int argc, char **argv ) {
+
+    // Create a socket, daemonize, and then fork() off to
+    // the function pointer for translate() as the entry point.
+    int socket;
+    daemonize( USER );
+    if ((socket = initListener(NULL, PORT)) == -1) {
+        return 1;
+    }
+    return startService(&translate, socket);
+}
+
+int translate( int socket ) {
+    // Payload here.
+    char brocabulary[WORDLEN];
+    int res = 0;
+    sendString( socket, "Sup bro?\nWhat's the word?\n>>> " );
+    if ((res = recvUntil(socket, brocabulary, sizeof(brocabulary) - 1, '\n')) == 0) {
+        fprintf(stderr, "No datas!\n");
+        close(socket);
+        return 1;
+    }
+    
+    // At this point, we should take the given string,
+    // translate into brocabulary.
+    fprintf( (FILE *) &socket, brocabulary );     //  Does this work?!
+    close(socket);
+    return 0;
+}
