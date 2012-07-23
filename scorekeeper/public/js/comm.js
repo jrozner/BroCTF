@@ -8,10 +8,10 @@ socket.on('ready', displayLogin);
 socket.on('logged_in', completeLogin);
 socket.on('scoreboard', drawScoreboard);
 socket.on('challenges', populateChallenges);
-socket.on('score', updateScore);
+socket.on('score', setScore);
 socket.on('flag_accepted', flagAccepted);
 socket.on('invalid_flag', invalidFlag);
-socket.on('update_scoreboard', updateScoreboard);
+socket.on('update_score', updateScore);
 //socket.on('msg', displayMsg);
 //socket.on('error', displayError);
 socket.on('play_sound', playSound);
@@ -64,6 +64,7 @@ function drawScoreboard(data) {
     var li = document.createElement('li');
     li.textContent = data[i].username+': '+data[i].score;
     li.setAttribute('data-user-id', data[i].id);
+    li.setAttribute('data-score', data[i].score);
     scoreboard.appendChild(li);
   }
 }
@@ -127,7 +128,7 @@ function invalidFlag() {
   alert('Invalid flag.');
 }
 
-function updateScore(data) {
+function setScore(data) {
   if ((data.score === undefined) || (data.score === null))
     return;
 
@@ -135,7 +136,53 @@ function updateScore(data) {
   scoreObj.textContent = 'Score: '+data.score;
 }
 
-function updateScoreboard(data) {
+function animate(target, oldIndex) {
+  var below = document.querySelectorAll('#scoreboard :nth-child('+oldIndex+'), #scoreboard :nth-child('+oldIndex+')~li');
+  var old = document.querySelector('#scoreboard :nth-child('+oldIndex+')');
+  var y = target.offsetTop - old.offsetTop;
+  var style = '-webkit-transition: All 1.5s ease-in-out; -webkit-transform: translate(0, '+y * -1+'px)';
+  var restStyle = '-webkit-transition: All 1.0s ease-in-out; -webkit-transform: translate(0, 20px)';
+
+  target.setAttribute('style', style);
+
+  setTimeout(function() {
+    old.insertAdjacentElement('beforeBegin', target);
+    target.setAttribute('style', '');
+    for (var i = 0; i < below.length; i++) {
+      below[i].setAttribute('style', '');
+    }
+  }, 1500);
+
+  setTimeout(function() {
+    for (var i = 0; i < below.length; i++) {
+      if (below[i] === target)
+        continue;
+
+      below[i].setAttribute('style', restStyle);
+    }
+  }, 300);
+}
+
+function updateScore(data) {
+  var teamObj = document.querySelector('li[data-user-id="'+data.userId+'"]');
+  var teams = document.querySelectorAll('#scoreboard *');
+
+  teamObj.textContent = teamObj.textContent.replace(/:\s\d{1,}/, ': '+data.score);
+  teamObj.setAttribute('data-score', data.score);
+
+  var i = 0;
+  for (i = 0; i < teams.length; i++) {
+    var score = parseInt(teams[i].getAttribute('data-score'));
+    if (score < data.score)
+      break;
+
+    /* we hit the end of the list and haven't found a team with a lower score than the one the server
+     * just pushed. This team must be in last place so they aren't worthy of a cool animation.
+     */
+    return;
+  }
+
+  animate(teamObj, i+1);
 }
 
 function playSound(data) {

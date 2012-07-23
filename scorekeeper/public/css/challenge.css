@@ -78,6 +78,11 @@
   margin: 10px 0 0 12px;
 }
 
+#scoreboard li {
+  height: 20px;
+  line-height: 20px;
+}
+
 .building_block {
   display: inline-block;
   width: 74px;
