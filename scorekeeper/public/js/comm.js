@@ -1,6 +1,7 @@
 document.querySelector('#login_button').addEventListener('click', login);
 document.querySelector('#pwn').addEventListener('click', submitFlag);
 
+var hints = {};
 var socket = io.connect('127.0.0.1:8080');
 
 socket.on('ready', displayLogin);
@@ -67,15 +68,41 @@ function drawScoreboard(data) {
   }
 }
 
+function swapChallenge(id) {
+  var hintObj = document.querySelector('#hint');
+  var flagObj = document.querySelector('#flag');
+
+  hintObj.innerHTML = hints[id];
+  flagObj.setAttribute('data-challenge-id', 15 - id);
+}
+
 function populateChallenges(data) {
-  var pyramid = document.querySelector('#pyramid')
+  var pyramid = document.querySelector('#pyramid');
+  var rows = data.length;
+
+  var k = 0;
   for (var i = 0; i < 5; i++) {
     for (var j = 0; j < (i + 1); j++) {
+      var classes = 'building_block';
       var div = document.createElement('div');
-      div.setAttribute('id', i + j);
-      div.setAttribute('class', 'building_block');
-      div.textContent = ((rows - i) * 100);
+
+      if (k + rows >= 15) {
+        var challenge = data[k-(15-rows)];
+        hints[k] = challenge.description;
+        if (challenge.solved === true)
+          classes += ' solved';
+        div.addEventListener('click', function(evt) {
+          swapChallenge(evt.toElement.getAttribute('id').replace(/challenge_/, ''));
+        });
+      } else {
+        classes += ' unopened';
+      }
+
+      div.setAttribute('id', 'challenge_'+k);
+      div.setAttribute('class', classes);
+      div.textContent = (5 - i) * 100;
       pyramid.appendChild(div);
+      k++;
     }
 
     var div = document.createElement('div');
@@ -90,7 +117,10 @@ function submitFlag() {
   flagObj.value = '';
 }
 
-function flagAccepted() {
+function flagAccepted(data) {
+  var challengeObj = document.querySelector('#challenge_'+(15-parseInt(data.challengeId)));
+  var classes = challengeObj.getAttribute('class');
+  challengeObj.setAttribute('class', classes+' solved');
 }
 
 function invalidFlag() {
@@ -102,10 +132,7 @@ function updateScore(data) {
     return;
 
   var scoreObj = document.querySelector('#score');
-  var uid = parseInt(scoreObj.getAttribute('data-user-id'));
-
-  if (uid === data.userId)
-    scoreObj.textContent = 'Score: '+data.score;
+  scoreObj.textContent = 'Score: '+data.score;
 }
 
 function updateScoreboard(data) {

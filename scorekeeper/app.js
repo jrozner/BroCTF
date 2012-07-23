@@ -31,7 +31,7 @@ io.sockets.on('connection', function(socket) {
   var user = new User();
 
   user.on('score', function(msg) {
-    socket.score('score', {'score': msg.score});
+    socket.emit('score', {'score': msg.score});
     io.sockets.emit('update_score', msg);
   });
 
@@ -78,7 +78,7 @@ io.sockets.on('connection', function(socket) {
       if (!user.isLoggedIn())
         return socket.emit('error', {'msg': "You must be logged in to do that."});
 
-      challenge.sendChallenges(client, function(evt, msg) {
+      challenge.sendOpenChallengesForUser(user.id, client, function(evt, msg) {
         socket.emit(evt, msg);
       });
     });
