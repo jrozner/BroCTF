@@ -1,7 +1,7 @@
-exports.sendChallenges = function() {
-  // do logic to bail early
-  // get open challenges
-  // send back open challenges
+exports.sendOpenChallengesForUser = function(userId, client, cb) {
+  exports._currentTier(client, function(tier) {
+    exports._getChallengesByTier(userId, tier, client, cb);
+  });
 }
 
 exports.verifyFlag = function(client, challengeId, flag, cb) {
@@ -18,5 +18,35 @@ exports.verifyFlag = function(client, challengeId, flag, cb) {
   });
 }
 
-exports.currentTier = function() {
+exports._currentTier = function(client, cb) {
+  var tier = 1;
+  var sql = 'select distinct challenge_id from user_flags';
+  client.query(sql, [], function(err, result) {
+    if (err)
+      return;
+
+    var rows = result.rows.length;
+    if (rows >= 0 && rows < 5)
+      tier = 1;
+    else if (rows >= 5 && rows < 9)
+      tier = 2;
+    else if (rows >= 9 && rows < 12)
+      tier = 3;
+    else if (rows >= 12 && rows < 14)
+      tier = 4;
+    else
+      tier = 5;
+
+    return cb(tier);
+  });
+}
+
+exports._getChallengesByTier = function(userId, tier, client, cb) {
+  var sql = 'select c.id, c.description, c.value, (select id is not null from user_flags where challenge_id = c.id and user_id = $1) as solved from challenges c left join user_flags uf on uf.challenge_id = c.id where tier <= $2 group by c.id order by c.id desc;'
+  client.query(sql, [userId, tier], function(err, result) {
+    if (err)
+      return;
+
+    cb('challenges', result.rows);
+  });
 }

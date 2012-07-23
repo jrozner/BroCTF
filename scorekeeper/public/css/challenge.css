@@ -27,6 +27,7 @@
   height: 500px;
   border: 1px dashed #00f;
   float: left;
+  text-align: center;
 }
 
 #right {
@@ -84,10 +85,18 @@
   margin: 5px 5px;
   line-height: 75px;
   cursor: pointer;
-}
-
-.open {
+  border: 2px dashed #00f;
+  text-align: center;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
 }
 
 .solved {
+  border: 2px dashed green;
+  color: green;
+}
+
+.unopened {
+  border: 2px dashed gray;
+  color: gray;
 }
