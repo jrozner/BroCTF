@@ -80,7 +80,12 @@ function swapChallenge(id) {
 }
 
 function populateChallenges(data) {
+  var challenges = document.querySelectorAll('.building_block');
   var pyramid = document.querySelector('#pyramid');
+
+  for (var i = 0; i < challenges.length; i++)
+    pyramid.removeChild(challenges[i]);
+
   var rows = data.length;
 
   var k = 0;
