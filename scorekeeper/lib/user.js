@@ -33,11 +33,11 @@ User.prototype.submitFlag = function(challengeId, flag, client, cb) {
     return cb('error', {'msg': "You are not logged in."});
 
   if ((challengeId === undefined) || (challengeId === '') || (flag === undefined) || (flag === ''))
-    return cb('invalidFlag', {'msg': 'You must submit a flag and challenge id.'});
+    return cb('error', {'msg': 'You must submit a flag and challenge id.'});
 
   challenge.verifyFlag(client, challengeId, flag, function(isValid) {
     if (isValid === false)
-      return cb('invalid_flag');
+      return cb('error', {'msg': "Flag is not valid."});
 
     self._checkSubmitted(client, challengeId, function(isSubmitted) {
       if (isSubmitted === true)

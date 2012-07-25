@@ -11,7 +11,6 @@ socket.on('scoreboard', drawScoreboard);
 socket.on('challenges', populateChallenges);
 socket.on('score', setScore);
 socket.on('flag_accepted', flagAccepted);
-socket.on('invalid_flag', invalidFlag);
 socket.on('update_score', updateScore);
 socket.on('msg', displayMsg);
 socket.on('error', displayError);
