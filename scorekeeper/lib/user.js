@@ -50,7 +50,8 @@ User.prototype.submitFlag = function(challengeId, flag, client, cb) {
         scoreboard.getScoreByUserId(client, self.id, function(evt, msg) {
           self.emit(evt, msg);
         });
-        return cb('flag_accepted', {'challengeId': challengeId, });
+        challenge._checkFirstBlood(client, challengeId, cb);
+        return cb('flag_accepted', {'challengeId': challengeId});
       });
     });
   });
