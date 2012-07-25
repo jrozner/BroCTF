@@ -90,7 +90,7 @@ function populateChallenges(data) {
 
   var k = 0;
   for (var i = 0; i < 5; i++) {
-    for (var j = 0; j < (i + 1); j++) {
+    for (var j = 0; j < (i + 1); j++, k++) {
       var classes = 'building_block';
       var div = document.createElement('div');
 
@@ -110,7 +110,6 @@ function populateChallenges(data) {
       div.setAttribute('class', classes);
       div.textContent = (5 - i) * 100;
       pyramid.appendChild(div);
-      k++;
     }
 
     var div = document.createElement('div');
