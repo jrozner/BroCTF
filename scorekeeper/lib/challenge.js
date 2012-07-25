@@ -1,3 +1,6 @@
+var events = require('events');
+exports.emitter = new events.EventEmitter();
+
 exports.sendOpenChallengesForUser = function(userId, client, cb) {
   exports._currentTier(client, function(tier) {
     exports._getChallengesByTier(userId, tier, client, cb);
@@ -48,5 +51,17 @@ exports._getChallengesByTier = function(userId, tier, client, cb) {
       return;
 
     cb('challenges', result.rows);
+  });
+}
+
+exports._checkFirstBlood = function(client, challengeId, cb) {
+  var self = this;
+  var sql = 'select count(id) as captures from user_flags where challenge_id = $1';
+  client.query(sql, [challengeId], function(err, result) {
+    if (err)
+      return;
+
+    if (result.rows[0].captures === 1)
+      self.emitter.emit('play_sound', {'name':"firstblood"});
   });
 }

@@ -41,6 +41,10 @@ io.sockets.on('connection', function(socket) {
      */
   });
 
+  challenge.emitter.on('play_sound', function(msg) {
+    io.sockets.emit('play_sound', msg);
+  });
+
   socket.set('user', user, function() {
     socket.emit('ready')
   });
