@@ -15,6 +15,8 @@ socket.on('update_score', updateScore);
 //socket.on('msg', displayMsg);
 //socket.on('error', displayError);
 socket.on('play_sound', playSound);
+socket.on('add_user', addUser);
+socket.on('remove_user', removeUser);
 
 function login() {
   var username = document.querySelector('#username').value;
