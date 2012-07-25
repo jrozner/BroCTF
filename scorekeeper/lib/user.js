@@ -19,9 +19,9 @@ User.prototype.login = function(username, password, client, cb) {
 
     if (result.rows.length > 0) {
       self.id = result.rows[0].id;
-      cb('logged_in', {'userId': result.rows[0].id, 'username': result.rows[0].username, 'score': result.rows[0].score});
+      return cb('logged_in', {'userId': result.rows[0].id, 'username': result.rows[0].username, 'score': result.rows[0].score});
     } else {
-      cb('invalid_login', {'msg': "Invalid username or password."});
+      return cb('error', {'msg': "Invalid username or password."});
     }
   });
 }
@@ -33,7 +33,7 @@ User.prototype.submitFlag = function(challengeId, flag, client, cb) {
     return cb('error', {'msg': "You are not logged in."});
 
   if ((challengeId === undefined) || (challengeId === '') || (flag === undefined) || (flag === ''))
-    return cb('error', {'msg': 'You must submit a flag and challenge id.'});
+    return cb('invalidFlag', {'msg': 'You must submit a flag and challenge id.'});
 
   challenge.verifyFlag(client, challengeId, flag, function(isValid) {
     if (isValid === false)

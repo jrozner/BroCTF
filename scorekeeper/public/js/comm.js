@@ -6,14 +6,15 @@ var socket = io.connect('127.0.0.1:8080');
 
 socket.on('ready', displayLogin);
 socket.on('logged_in', completeLogin);
+socket.on('invalid_login', invalidLogin);
 socket.on('scoreboard', drawScoreboard);
 socket.on('challenges', populateChallenges);
 socket.on('score', setScore);
 socket.on('flag_accepted', flagAccepted);
 socket.on('invalid_flag', invalidFlag);
 socket.on('update_score', updateScore);
-//socket.on('msg', displayMsg);
-//socket.on('error', displayError);
+socket.on('msg', displayMsg);
+socket.on('error', displayError);
 socket.on('play_sound', playSound);
 socket.on('add_user', addUser);
 socket.on('remove_user', removeUser);
@@ -57,6 +58,10 @@ function completeLogin(data) {
   containerObj.setAttribute('class', classes.replace(/hidden\s*/, ''));
 
   playSound({'name': 'prepare'});
+}
+
+function invalidLogin(data) {
+  
 }
 
 function drawScoreboard(data) {
@@ -131,7 +136,35 @@ function flagAccepted(data) {
 }
 
 function invalidFlag() {
-  alert('Invalid flag.');
+  displayError({'msg': "Invalid flag."});
+}
+
+function displayMsg(data) {
+  var msgboxObj = document.querySelector('#msgbox');
+
+  var msgObj = document.createElement('p');
+  msgObj.textContent = data.msg;
+  msgboxObj.appendChild(msgObj);
+
+  msgboxObj.removeAttrbute('class');
+  setTimeout(function() {
+    msgboxObj.setAttribute('class', 'hidden');
+    msgboxObj.removeChild(msgObj);
+  }, 1200);
+}
+
+function displayError(data) {
+  var msgboxObj = document.querySelector('#msgbox');
+
+  var msgObj = document.createElement('p');
+  msgObj.textContent = data.msg;
+  msgboxObj.appendChild(msgObj);
+
+  msgboxObj.setAttribute('class', 'error');
+  setTimeout(function() {
+    msgboxObj.setAttribute('class', 'hidden');
+    msgboxObj.removeChild(msgObj);
+  }, 1200);
 }
 
 function setScore(data) {
