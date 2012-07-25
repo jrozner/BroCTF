@@ -196,3 +196,31 @@ function playSound(data) {
 
   audio.play();
 }
+
+function addUser(data) {
+  var users = document.querySelectorAll('#scoreboard *');
+
+  var position = 1;
+  for (var i = 0; i < users.length; i++, position++) {
+    var score = parseInt(users[i].getAttribute('data-score'));
+    if (score > data.score)
+      break;
+  }
+
+  var newUser = document.createElement('li');
+  newUser.textContent = data.username;
+  newUser.setAttribute('data-score', data[position].score);
+  newUser.setAttribute('data-user-id', data[position].userId);
+
+  if (position === users.length)
+    document.querySelector('ol#scoreboard :nth-child('+position+')').insertAfter(newUser);
+  else
+    document.querySelector('ol#scoreboard :nth-child('+position+')').insertBefore(newUser);
+}
+
+function removeUser(data) {
+  var scoreboardObj = document.querySelector('ol#scoreboard');
+  var userObj = document.querySelector('li[data-user-id="'+data.userId+'"]');
+
+  scoreboard.removeChild(userObj);
+}
