@@ -103,8 +103,9 @@ function populateChallenges(data) {
         hints[k] = challenge.description;
         if (challenge.solved === true)
           classes += ' solved';
+
         div.addEventListener('click', function(evt) {
-          swapChallenge(evt.toElement.getAttribute('id').replace(/challenge_/, ''));
+          swapChallenge(evt.target.getAttribute('data-challenge-id'));
         });
       } else {
         classes += ' unopened';
