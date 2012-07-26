@@ -59,10 +59,6 @@ function completeLogin(data) {
   playSound({'name': 'prepare'});
 }
 
-function invalidLogin(data) {
-  
-}
-
 function drawScoreboard(data) {
   var scoreboard = document.querySelector('#scoreboard');
 
