@@ -1,5 +1,6 @@
-var app = require('http').createServer(handler)
-  , io = require('socket.io').listen(app)
+var static = require('node-static')
+  , fileServer = new static.Server('./public')
+  , io = require('socket.io')
   , util = require('util')
   , fs = require('fs')
   , pg = require('pg')
@@ -8,20 +9,13 @@ var app = require('http').createServer(handler)
   , scoreboard = require('./lib/scoreboard')
   , challenge = require('./lib/challenge');
 
-app.listen(8080);
-io.set('log level', 0);
-
-function handler(req, res) {
-  fs.readFile(__dirname+'/public'+req.url,
-  function (err, data) {
-    if (err) {
-      res.writeHead(500);
-    }
-
-    res.writeHead(200);
-    res.end(data);
+var app = require('http').createServer(function (request, response) {
+    request.addListener('end', function () {
+    fileServer.serve(request, response);
   });
-}
+}).listen(8080);
+io = io.listen(app);
+io.set('log level', 0);
 
 var conString = 'tcp://'+db.username+':'+db.password+'@'+db.hostname+':'+db.port+'/'+db.database;
 client = new pg.Client(conString);
