@@ -6,7 +6,6 @@ var socket = io.connect('127.0.0.1:8080');
 
 socket.on('ready', displayLogin);
 socket.on('logged_in', completeLogin);
-socket.on('invalid_login', invalidLogin);
 socket.on('scoreboard', drawScoreboard);
 socket.on('challenges', populateChallenges);
 socket.on('score', setScore);
@@ -107,14 +106,14 @@ function populateChallenges(data) {
         classes += ' unopened';
       }
 
-      div.setAttribute('id', 'challenge_'+k);
+      div.setAttribute('data-challenge-id', k);
       div.setAttribute('class', classes);
       div.textContent = (5 - i) * 100;
       pyramid.appendChild(div);
     }
 
-    var div = document.createElement('div');
-    pyramid.appendChild(div);
+    var spacer = document.createElement('div');
+    pyramid.appendChild(spacer);
   }
 }
 
@@ -126,7 +125,7 @@ function submitFlag() {
 }
 
 function flagAccepted(data) {
-  var challengeObj = document.querySelector('#challenge_'+(15-parseInt(data.challengeId)));
+  var challengeObj = document.querySelector('.building_block[data-challenge-id="'+(15-parseInt(data.challengeId))+'"]');
   var classes = challengeObj.getAttribute('class');
   challengeObj.setAttribute('class', classes+' solved');
 }
@@ -167,18 +166,36 @@ function setScore(data) {
   scoreObj.textContent = 'Score: '+data.score;
 }
 
-function animate(target, oldIndex) {
-  var below = document.querySelectorAll('#scoreboard :nth-child('+oldIndex+'), #scoreboard :nth-child('+oldIndex+')~li');
-  var old = document.querySelector('#scoreboard :nth-child('+oldIndex+')');
-  var y = target.offsetTop - old.offsetTop;
-  var style = '-webkit-transition: All 1.5s ease-in-out; -webkit-transform: translate(0, '+y * -1+'px)';
-  var restStyle = '-webkit-transition: All 1.0s ease-in-out; -webkit-transform: translate(0, 20px)';
+function updateScore(data) {
+  var scoreboardObj = document.querySelector('ol#scoreboard');
+  var userObj = document.querySelector('li[data-user-id="'+data.userId+'"]');
+  var users = document.querySelectorAll('#scoreboard *');
 
-  target.setAttribute('style', style);
+  userObj.textContent = data.username+': '+data.score;
+  userObj.setAttribute('data-score', data.score);
+
+  var position = 1;
+  for (var i = 0; i < users.length; i++, position++) {
+    var score = parseInt(users[i].getAttribute('data-score'));
+    if (data.score > score)
+      break;
+  }
+
+  var below = document.querySelectorAll('#scoreboard :nth-child('+position+'), #scoreboard :nth-child('+position+')~li');
+  var old = document.querySelector('#scoreboard :nth-child('+position+')');
+  var y = userObj.offsetTop - old.offsetTop;
+  var style = '-webkit-transition: All 1.5s ease-in-out; -moz-transition: All 1.5s ease-in-out; -webkit-transform: translate(0, '+y * -1+'px); -moz-transform: translate(0, '+y * -1+'px)';
+  var restStyle = '-webkit-transition: All 1.2s ease-in-out; -moz-transition: All 1.2s ease-in-out; -webkit-transform: translate(0, 20px); -moz-transform: translate(0, 20px);';
+
+  userObj.setAttribute('style', style);
 
   setTimeout(function() {
-    old.insertAdjacentElement('beforeBegin', target);
-    target.setAttribute('style', '');
+    if (position === users.length)
+      scoreboardObj.appendChild(old);
+    else
+      scoreboardObj.insertBefore(userObj, old);
+
+    userObj.setAttribute('style', '');
     for (var i = 0; i < below.length; i++) {
       below[i].setAttribute('style', '');
     }
@@ -186,34 +203,12 @@ function animate(target, oldIndex) {
 
   setTimeout(function() {
     for (var i = 0; i < below.length; i++) {
-      if (below[i] === target)
+      if (below[i] === userObj)
         continue;
 
       below[i].setAttribute('style', restStyle);
     }
   }, 300);
-}
-
-function updateScore(data) {
-  var teamObj = document.querySelector('li[data-user-id="'+data.userId+'"]');
-  var teams = document.querySelectorAll('#scoreboard *');
-
-  teamObj.textContent = teamObj.textContent.replace(/:\s\d{1,}/, ': '+data.score);
-  teamObj.setAttribute('data-score', data.score);
-
-  var i = 0;
-  for (i = 0; i < teams.length; i++) {
-    var score = parseInt(teams[i].getAttribute('data-score'));
-    if (score < data.score)
-      break;
-
-    /* we hit the end of the list and haven't found a team with a lower score than the one the server
-     * just pushed. This team must be in last place so they aren't worthy of a cool animation.
-     */
-    return;
-  }
-
-  animate(teamObj, i+1);
 }
 
 function playSound(data) {
@@ -238,15 +233,16 @@ function addUser(data) {
       break;
   }
 
+  var adjacentUser = document.querySelector('ol#scoreboard :nth-child('+position+')');
   var newUser = document.createElement('li');
   newUser.textContent = data.username;
   newUser.setAttribute('data-score', data[position].score);
   newUser.setAttribute('data-user-id', data[position].userId);
 
-  if (position === users.length)
-    document.querySelector('ol#scoreboard :nth-child('+position+')').insertAfter(newUser);
-  else
-    document.querySelector('ol#scoreboard :nth-child('+position+')').insertBefore(newUser);
+    if (position === users.length)
+      scoreboardObj.appendChild(newUser);
+    else
+      scoreboardObj.insertBefore(newUser, adjacentUser);
 }
 
 function removeUser(data) {
