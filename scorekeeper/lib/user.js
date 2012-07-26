@@ -43,6 +43,7 @@ User.prototype.submitFlag = function(challengeId, flag, client, cb) {
       if (isSubmitted === true)
         return cb('error', {'msg': 'That flag has already been submitted.'});
 
+      challenge._checkTierComplete(client, cb);
       self._captureFlag(client, challengeId, function(isCaptured) {
         if (isCaptured === false)
           return cb('error', {'msg': 'Unable to capture flag.'});

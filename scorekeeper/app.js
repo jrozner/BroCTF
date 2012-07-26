@@ -45,6 +45,20 @@ io.sockets.on('connection', function(socket) {
      */
   });
 
+  challenge.emitter.on('tier_complete', function() {
+    socket.get('user', function(err, user) {
+      if (err)
+        return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
+
+      if (!user.isLoggedIn())
+        return socket.emit('error', {'msg': "You must be logged in to do that."});
+
+      challenge.sendOpenChallengesForUser(user.id, client, function(evt, msg) {
+        socket.emit(evt, msg);
+      });
+    });
+  });
+
   socket.set('user', user, function() {
     socket.emit('ready')
   });

@@ -65,3 +65,17 @@ exports._checkFirstBlood = function(client, challengeId, cb) {
       self.emitter.emit('play_sound', {'name':"firstblood"});
   });
 }
+
+exports._checkTierComplete = function(client, cb) {
+  var self = this;
+  exports._currentTier(client, function(tier) {
+    var sql = 'select count(distinct c.id) as total, count(distinct uf.challenge_id) as solved from challenges c left join user_flags uf on c.id = uf.challenge_id where c.tier = $1';
+    client.query(sql, [tier], function(err, result) {
+      if (err)
+        return cb('error', {'msg': "There was a database error, let us know."});
+
+      if (result.rows[0].total === result.rows[0].solved)
+        return self.emitter.emit('tier_complete');
+    });
+  });
+}
