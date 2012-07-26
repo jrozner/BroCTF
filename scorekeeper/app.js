@@ -27,6 +27,10 @@ var conString = 'tcp://'+db.username+':'+db.password+'@'+db.hostname+':'+db.port
 client = new pg.Client(conString);
 client.connect();
 
+challenge.emitter.on('play_sound', function(msg) {
+  io.sockets.emit('play_sound', msg);
+});
+
 io.sockets.on('connection', function(socket) {
   var user = new User();
 
@@ -39,10 +43,6 @@ io.sockets.on('connection', function(socket) {
     /* Should probably do some sort of logging here. It should only happen if there's a problem
      * on the server side.
      */
-  });
-
-  challenge.emitter.on('play_sound', function(msg) {
-    io.sockets.emit('play_sound', msg);
   });
 
   socket.set('user', user, function() {
