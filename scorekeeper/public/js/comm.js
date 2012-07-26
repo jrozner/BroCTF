@@ -135,10 +135,6 @@ function flagAccepted(data) {
   challengeObj.setAttribute('class', classes+' solved');
 }
 
-function invalidFlag() {
-  displayError({'msg': "Invalid flag."});
-}
-
 function displayMsg(data) {
   var msgboxObj = document.querySelector('#msgbox');
 
