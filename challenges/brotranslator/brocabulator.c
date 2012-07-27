@@ -7,9 +7,19 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <regex.h>
+
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
 #include "libjack3d.h"
 
-#define USER "broseph"
+#if !defined(USER)
+    #error "You suck at life."
+#endif
+
 #define PORT 8008
 #define BROMANCE "/usr/lib/brocabulary/bro"
 #define WORDLEN 300
@@ -21,7 +31,8 @@ int main(int argc, char **argv) {
     // Create a socket, daemonize, and then fork() off to
     // the function pointer for translate() as the entry point.
     int socket;
-    daemonize(USER);
+    if (!argv[1])
+        daemonize(USER);
     if ((socket = initListener(NULL, PORT)) == -1) {
         return 1;
     }
@@ -33,14 +44,18 @@ int translate(int socket) {
     FILE *fp;
     char brocabulary[WORDLEN];
     char broskey[41];
+    char *safe, cmd[256+1];
+    char buf[512+1];
+    int i, j;
 
+    /* /[bgpt]r[ola]/ */
     if ((fp = fopen("flag.txt", "r")) == NULL) {
       perror("fopen");
       close(socket);
       return 1;
     }
 
-    if (fgets((char *)&broskey, sizeof(broskey), fp) == NULL) {
+    if (fgets(broskey, sizeof(broskey), fp) == NULL) {
       perror("fgets");
       close(socket);
       return 1;
@@ -50,7 +65,7 @@ int translate(int socket) {
 
     sendString( socket, "Sup bro?\n" );
     while (1) {
-        sendString( socket, "\nWhat's the word?\n>>> " );
+        sendString(socket, "\nWhat's the word?\n>>> ");
 
         if ((res = recvUntil(socket, brocabulary, sizeof(brocabulary) - 1, '\n')) == 0) {
             fprintf(stderr, "No datas!\n");
@@ -58,7 +73,35 @@ int translate(int socket) {
             return 1;
         }
 
-        dprintf(socket, brocabulary); // NICE. Vulerable output direct to a socket.
+        /* +3 for single quoting the string */
+        safe = calloc(1, res+3);
+        safe[0] = '\'';
+        for (i=0, j=1; i < res; i++) {
+            switch(brocabulary[i]) {
+                case '\\':
+                case '\'':
+                    break;
+                default:
+                    safe[j++] = brocabulary[i];
+                    break;
+            }
+        }
+        safe[j-1] = '\'';
+
+        strcpy(cmd, "(echo ");
+        snprintf(cmd+strlen(cmd), sizeof(cmd)-strlen(cmd), safe);
+        strncat(cmd, "| /usr/local/bin/gsed -r -e 's/[bgpt]r[ola]/bro/gp')", sizeof(cmd)-strlen(cmd));
+
+        fp = popen(cmd, "r");
+        if (fp) {
+            memset(buf, 0x00, sizeof(buf));
+            fgets(buf, sizeof(buf), fp);
+            pclose(fp);
+
+            send(socket, buf, strlen(buf), 0);
+        }
+
+        free(safe);
     }
 
     close(socket);

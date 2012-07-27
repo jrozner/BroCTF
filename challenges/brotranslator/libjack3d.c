@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <signal.h>
 #include <arpa/inet.h>
+#include <sys/wait.h>
 #ifdef __linux__
 #include <wait.h>
 #endif
