@@ -181,6 +181,9 @@ function updateScore(data) {
       break;
   }
 
+  if (users[position] == userObj)
+    return;
+
   var below = document.querySelectorAll('#scoreboard :nth-child('+position+'), #scoreboard :nth-child('+position+')~li');
   var old = document.querySelector('#scoreboard :nth-child('+position+')');
   var y = userObj.offsetTop - old.offsetTop;
