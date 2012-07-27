@@ -20,8 +20,10 @@
     #error "You suck at life."
 #endif
 
-#define PORT 8008
-#define BROMANCE "/usr/lib/brocabulary/bro"
+#if !defined(PORT)
+    #define PORT 8008
+#endif
+
 #define WORDLEN 300
 
 int translate(int);
@@ -44,12 +46,12 @@ int translate(int socket) {
     FILE *fp;
     char brocabulary[WORDLEN];
     char broskey[41];
-    char *safe, cmd[256+1];
-    char buf[512+1];
+    char *safe, cmd[WORDLEN+50+1];
+    char buf[WORDLEN+100+1];
     int i, j;
 
     /* /[bgpt]r[ola]/ */
-    if ((fp = fopen("flag.txt", "r")) == NULL) {
+    if ((fp = fopen("/usr/home/" USER "/flag.txt", "r")) == NULL) {
       perror("fopen");
       close(socket);
       return 1;
@@ -90,7 +92,7 @@ int translate(int socket) {
 
         strcpy(cmd, "(echo ");
         snprintf(cmd+strlen(cmd), sizeof(cmd)-strlen(cmd), safe);
-        strncat(cmd, "| /usr/local/bin/gsed -r -e 's/[bgpt]r[ola]/bro/gp')", sizeof(cmd)-strlen(cmd));
+        strncat(cmd, "| /usr/local/bin/gsed -r -e 's/[bgpt]r[ola]/bro/p')", sizeof(cmd)-strlen(cmd));
 
         fp = popen(cmd, "r");
         if (fp) {
