@@ -1,5 +1,6 @@
-var app = require('http').createServer(handler)
-  , io = require('socket.io').listen(app)
+var static = require('node-static')
+  , fileServer = new static.Server('./public')
+  , io = require('socket.io')
   , util = require('util')
   , fs = require('fs')
   , pg = require('pg')
@@ -8,24 +9,21 @@ var app = require('http').createServer(handler)
   , scoreboard = require('./lib/scoreboard')
   , challenge = require('./lib/challenge');
 
-app.listen(8080);
-io.set('log level', 0);
-
-function handler(req, res) {
-  fs.readFile(__dirname+'/public'+req.url,
-  function (err, data) {
-    if (err) {
-      res.writeHead(500);
-    }
-
-    res.writeHead(200);
-    res.end(data);
+var app = require('http').createServer(function (request, response) {
+    request.addListener('end', function () {
+    fileServer.serve(request, response);
   });
-}
+}).listen(8080);
+io = io.listen(app);
+io.set('log level', 0);
 
 var conString = 'tcp://'+db.username+':'+db.password+'@'+db.hostname+':'+db.port+'/'+db.database;
 client = new pg.Client(conString);
 client.connect();
+
+challenge.emitter.on('play_sound', function(msg) {
+  io.sockets.emit('play_sound', msg);
+});
 
 io.sockets.on('connection', function(socket) {
   var user = new User();
@@ -39,6 +37,20 @@ io.sockets.on('connection', function(socket) {
     /* Should probably do some sort of logging here. It should only happen if there's a problem
      * on the server side.
      */
+  });
+
+  challenge.emitter.on('tier_complete', function() {
+    socket.get('user', function(err, user) {
+      if (err)
+        return socket.emit('error', {'msg': "The was an error retrieving your user object. Let us know."});
+
+      if (!user.isLoggedIn())
+        return socket.emit('error', {'msg': "You must be logged in to do that."});
+
+      challenge.sendOpenChallengesForUser(user.id, client, function(evt, msg) {
+        socket.emit(evt, msg);
+      });
+    });
   });
 
   socket.set('user', user, function() {
