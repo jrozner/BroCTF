@@ -85,7 +85,7 @@ module.exports = [
   },
   {
     'title': "Netcat",
-    'description': "Check out Netcat running on dual.broc.tf:3863<br /><a href=\"http://files.broc.tf/\">file</a>",
+    'description': "Check out Netcat running on netcat.broc.tf:3863<br /><a href=\"http://files.broc.tf/\">file</a>",
     'tier': 4,
     'flag': "a1a93cc630619459340a9f6b27d0ee463b82bc24",
     'value': 400
