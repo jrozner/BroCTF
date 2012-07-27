@@ -90,4 +90,28 @@ User.prototype._captureFlag = function(client, challengeId, cb) {
   });
 }
 
+User.prototype.createUser = function(client, data, cb) {
+  var self = this;
+  var sql = 'insert into users (username, password) values($1, $2) returning id';
+  client.query(sql, [data.username, data.password], function(err, result) {
+    if (err)
+      return cb({'msg': "Could not add user."});
+
+    self.emit('team_added', result.row[0].id);
+    return cb({'msg': "User added"});
+  });
+}
+
+User.prototype.removeUser = function(client, data, cb) {
+  var self = this;
+  var sql = 'delete from users where username = $1 returning id';
+  client.query(sql, [data.username], function(err, result) {
+    if (err)
+      return cb({'msg': "Could not remove user."});
+
+    self.emit('team_removed', result.rows[0].id)
+    return cb({'msg': "User removed"});
+  });
+}
+
 module.exports = User;

@@ -79,3 +79,15 @@ exports._checkTierComplete = function(client, cb) {
     });
   });
 }
+
+exports.solveChallenge = function(client, data, cb) {
+  if ((data.challengeId === undefined) || (data.challengeId === ''))
+    return cb({'msg': 'You must submit a challenge id.'});
+
+    exports._checkTierComplete(client, cb);
+    var sql = 'insert into user_flags (user_id, challenge_id) values(-1, $2)';
+    client.query(sql, [data.challengeId], function(err, result) {
+      if (err)
+        return;
+  });
+}

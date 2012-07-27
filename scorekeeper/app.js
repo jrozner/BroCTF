@@ -15,9 +15,40 @@ var app = require('http').createServer(function (request, response) {
 io = io.listen(app);
 io.set('log level', 0);
 
+var actions = {
+  'user_added': User.addTeam,
+  'user_removed': User.removeTeam,
+  'give_bonus': function() {},
+  'solve_challenge': challenge.solveChallenge
+}
+
 var conString = 'tcp://'+db.username+':'+db.password+'@'+db.hostname+':'+db.port+'/'+db.database;
 client = new pg.Client(conString);
 client.connect();
+
+/*
+var server = netCreateServer(function(socket) {
+  socket.on('data', function(data) {
+    if ((data.action === undefined) || (data.action === ''))
+      return socket.write({'result': "error", 'msg': "No action specified."});
+
+    if ((actions[data.action] === undefined) || (typeof actions[data.action] !== 'function'))
+      return socket.write({'result': "error", 'msg': "Action is not valid."});
+
+    actions[data.action](client, data, function(evt, msg) {
+      return io.sockets.emit(evt, msg);
+    });
+  });
+});
+
+User.on('user_added', function(msg) {
+  io.sockets.emit('add_user', msg);
+}
+
+User.on('user_removed', function(msg) {
+  io.sockets.emit('remove_user', msg);
+}
+*/
 
 challenge.emitter.on('play_sound', function(msg) {
   io.sockets.emit('play_sound', msg);
