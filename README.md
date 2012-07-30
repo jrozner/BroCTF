@@ -10,3 +10,5 @@ keys.txt     : duh.
 /scripts     : utility scripts (such as, making the keys)
 /prereg      : the pre-registration site
 /scorekeeper : the roflscaling html5 scorekeeper!
+
+All content of this repository is licensed GPLv2 unless otherwise specified.
