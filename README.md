@@ -2,7 +2,8 @@
 
 ### WARNING!!!
 
-There are spoilers in /challenges. Don't read the readme's if you don't want hints
+There are spoilers in /challenges. Don't read the readme's if you don't want hints.
+This repo contains content that is generally considered NSFW.
 
 /challenges  : the code and docs on each challenge.
 
